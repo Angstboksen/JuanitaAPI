@@ -9,9 +9,6 @@ const app = express();
 app.use(urlencoded({ extended: true }));
 app.use(json());
 app.use(cors());
-app.set("json spaces", 4);
-
-// There are 'any' on purpose.
 app.use((req: any, res: any, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -23,6 +20,8 @@ app.use((req: any, res: any, next) => {
   );
   next();
 });
+
+app.set("json spaces", 4);
 
 app.use("/", routes);
 
@@ -41,6 +40,8 @@ app.get("*", function (req, res) {
   res.status(404).send(message("*", 404));
 });
 
-app.listen(8000, () => {
-  console.log("[Juanita]: Serves is listening at http://localhost:8000");
+const port = 8000;
+const host = "localhost";
+app.listen(port, host, () => {
+  console.log(`[Juanita]: Serves is listening at http://${host}:${port}`);
 });

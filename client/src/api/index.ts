@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const baseURL = "http://localhost:8000/";
+const baseURL = "http://localhost:8000";
 
 export enum HTTPMethods {
   GET = "GET",
@@ -13,7 +13,7 @@ export const fetchFromAPI = async (
   url: string,
   method: HTTPMethods,
   object: unknown = {}
-): Promise<{ message: string; status: number; data: any }> => {
+): Promise<ResponseMessage> => {
   const URL = baseURL + url;
   const response = await fetch(URL, {
     method: method,
