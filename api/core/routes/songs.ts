@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import firestoreConnection from "../firebase/connection";
 import {
   _fetchDBCollection,
   _fetchDBCollectionWithDoc,
@@ -54,4 +55,25 @@ router.route("/sotm").get(async (request: Request, response: Response) => {
   }
 });
 
+router.route("/random").get(async (request: Request, response: Response) => {
+  const path = "/songs/random";
+  console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
+  try {
+    const songs = await _fetchDBCollection("songs");
+
+    // firestoreConnection
+    //   .collection("songs")
+    //   .get()
+    //   .then((snap) => {
+    //     const size = snap.size; // will return the collection size
+    //     console.log(size);
+    //   });
+
+    const song = songs[Math.floor(Math.random() * songs.length)];
+    response.json(message(path, 200, song));
+  } catch (error) {
+    console.error(`[Juanita]: An error occured at '${path}': ${error}`);
+    response.json(message(path, 500));
+  }
+});
 export default router;
