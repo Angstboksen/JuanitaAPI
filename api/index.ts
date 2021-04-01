@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { urlencoded, json } from "body-parser";
 import cors from "cors";
 import routes from "./core/routes";
+import { message } from "./core/utils/responses";
 
 const app = express();
 
@@ -35,6 +36,10 @@ app.use(
     next(error);
   }
 );
+
+app.get("*", function (req, res) {
+  res.status(404).send(message("*", 404));
+});
 
 app.listen(8000, () => {
   console.log("[Juanita]: Serves is listening at http://localhost:8000");

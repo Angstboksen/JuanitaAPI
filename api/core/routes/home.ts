@@ -4,19 +4,23 @@ import {
   _fetchDBCollectionWithDoc,
 } from "../firebase/logic";
 import { message } from "../utils/responses";
-
 const router = express.Router();
 
 router.route("/").get(async (request: Request, response: Response) => {
-  const path = "/searches";
+  const path = "/";
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   try {
-    const searches = await _fetchDBCollection("searches");
-    for (const search of searches) {
-      search.date = new Date(search.date).toString()
-      delete search["song"];
-    }
-    response.json(message(path, 200, searches));
+    const obj = {
+      name: "JuanitaAPI",
+      type: "REST",
+      date: new Date().toString(),
+      author: "Hauk Aleksander Olaussen",
+      github_repository: "https://github.com/Angstboksen/JuanitaAPI",
+      discord_bot: "https://github.com/Angstboksen/JuanitaMusic",
+      invite_link:
+        "https://discord.com/oauth2/authorize?client_id=708320525285457950&permissions=0&scope=bot",
+    };
+    response.json(message(path, 200, obj));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
     response.json(message(path, 500));

@@ -21,7 +21,7 @@ export const _fetchDBCollectionWithDoc = async (
   return snapshot.data();
 };
 
-export const _showDBCollectionAppliedFilter = async (
+export const _fetchDBCollectionAppliedFilter = async (
   collectionName: string,
   documentField: string,
   queryOperator: any,

@@ -4,6 +4,7 @@ import { ResponseMessage } from "../../types";
 
 const ResponseMessages = new Map();
 ResponseMessages.set(200, "200 OK");
+ResponseMessages.set(204, "204 No Content");
 ResponseMessages.set(400, "400 Bad Request");
 ResponseMessages.set(404, "404 Not Found");
 ResponseMessages.set(500, "500 Internal Server Error");
