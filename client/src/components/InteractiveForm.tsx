@@ -26,6 +26,10 @@ const InteractiveForm: React.FC<Props> = ({ updateUrl, execute }) => {
     event.preventDefault();
     updateUrl(event.target.value);
   };
+  const onSubmit = (event: any) => {
+    event.preventDefault()
+    execute()
+  }
 
   return (
     <div className="pad-margin-no-top">
@@ -35,6 +39,7 @@ const InteractiveForm: React.FC<Props> = ({ updateUrl, execute }) => {
         className={classes.root}
         noValidate
         autoComplete="off"
+        onSubmit={onSubmit}
       >
         <TextField
           defaultValue="/"
@@ -43,13 +48,9 @@ const InteractiveForm: React.FC<Props> = ({ updateUrl, execute }) => {
           variant="filled"
           color="primary"
           onChange={endpointChange}
-          onKeyUp={(event) => {
-            event.preventDefault();
-            console.log(event);
-            if (event.ctrlKey && event.key === "Enter") execute();
-          }}
+
         />
-        <Button color="default" variant="contained" onClick={execute}>
+        <Button color="default" variant="contained" type="submit">
           Execute
         </Button>
       </form>
