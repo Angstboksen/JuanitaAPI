@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const baseURL = "http://85.167.24.231:8000";
+const baseURL = "https://juanitaapi.herokuapp.com";
 
 export enum HTTPMethods {
   GET = "GET",
