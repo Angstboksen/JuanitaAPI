@@ -23,7 +23,7 @@ router.route("/").get(async (request: Request, response: Response) => {
 });
 
 router
-  .route("/requestor/:userid")
+  .route("/:userid")
   .get(async (request: Request, response: Response) => {
     const userid: string = request.params.userid;
     const path = `/searches/requestor/${userid}`;

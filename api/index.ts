@@ -36,7 +36,9 @@ app.use(
   }
 );
 
-app.get("*", function (req, res) {
+
+
+app.get("*", function (req: Request, res: Response) {
   res.status(404).send(message("*", 404));
 });
 

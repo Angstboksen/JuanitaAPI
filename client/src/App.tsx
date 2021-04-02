@@ -3,12 +3,12 @@ import { fetchFromAPI, HTTPMethods } from "./api";
 import "react-json-pretty/themes/acai.css";
 import ConsoleComponent from "./components/ConsoleComponent";
 import InteractiveForm from "./components/InteractiveForm";
+import DrawerContainer from "./components/DrawerContainer";
 
 const App: React.FC = () => {
   const [loaded, setLoaded] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [json, setJson] = useState<string>("");
-  const [limit, setLimit] = useState<number>(20);
   const [url, setUrl] = useState<string>("/");
 
   const execute = async () => {
@@ -31,7 +31,6 @@ const App: React.FC = () => {
       status,
       message,
       size,
-      limit,
       data: data ? data : null,
     });
   };
@@ -39,7 +38,7 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <div className="flex-normal">
-        <InteractiveForm execute={execute} updateUrl={updateUrl} />
+        <DrawerContainer execute={execute} updateUrl={updateUrl} />
         <ConsoleComponent
           json={json}
           loaded={loaded}

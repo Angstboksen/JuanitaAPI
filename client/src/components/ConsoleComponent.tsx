@@ -16,11 +16,12 @@ const ConsoleComponent: React.FC<Props> = ({
   loading,
 }) => {
   return (
-    <div className="console pad-margin">
-      <pre>{loaded ? display : defaultDisplay}</pre>
+    <div className="console">
+      <h2>Juanita API console view</h2>
+      <pre>{display}</pre>
       {loading ? (
         <>
-          <code>Loading data...</code>
+          <pre>Loading data...</pre>
           <br />
           <CircularProgress />
         </>

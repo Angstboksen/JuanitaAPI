@@ -32,8 +32,7 @@ const InteractiveForm: React.FC<Props> = ({ updateUrl, execute }) => {
   }
 
   return (
-    <div className="pad-margin-no-top">
-      <h2>Interactive API</h2>
+    <div className="pad-margin-no-top interactiveform">
       <form
         id="interactive-form"
         className={classes.root}
