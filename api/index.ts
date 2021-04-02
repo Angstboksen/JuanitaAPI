@@ -41,7 +41,7 @@ app.get("*", function (req, res) {
 });
 
 const port = 8000;
-const host = "localhost";
+const host = "0.0.0.0";
 app.listen(port, host, () => {
   console.log(`[Juanita]: Serves is listening at http://${host}:${port}`);
 });
