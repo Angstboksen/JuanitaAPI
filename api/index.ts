@@ -42,6 +42,6 @@ app.get("*", function (req, res) {
 
 const port = 8000;
 const host = "0.0.0.0";
-app.listen(port, host, () => {
+app.listen(process.env.PORT ? +process.env.PORT : port, host, () => {
   console.log(`[Juanita]: Serves is listening at http://${host}:${port}`);
 });
