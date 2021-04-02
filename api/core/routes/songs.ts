@@ -4,14 +4,16 @@ import {
   _fetchDBCollection,
   _fetchDBCollectionWithDoc,
 } from "../firebase/logic";
+import { validateLimit } from "../utils/helpers";
 import { message } from "../utils/responses";
 const router = express.Router();
 
 router.route("/").get(async (request: Request, response: Response) => {
+  const limit = request.query.limit;
   const path = "/songs";
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   try {
-    const songs = await _fetchDBCollection("songs");
+    const songs = validateLimit(await _fetchDBCollection("songs"), limit);
     response.json(message(path, 200, songs));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
