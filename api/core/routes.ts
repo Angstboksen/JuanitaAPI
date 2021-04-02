@@ -7,6 +7,7 @@ import readRequestors from "./routes/requestors";
 import readAliases from "./routes/aliases";
 import stats from "./routes/stats";
 import home from "./routes/home";
+
 const router = express.Router();
 
 router.use("/", home);
