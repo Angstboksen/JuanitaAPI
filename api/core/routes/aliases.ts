@@ -3,10 +3,12 @@ import {
   _fetchDBCollection,
   _fetchDBCollectionWithDoc,
 } from "../firebase/logic";
+import { validateLimit } from "../utils/helpers";
 import { message } from "../utils/responses";
 const router = express.Router();
 
 router.route("/").get(async (request: Request, response: Response) => {
+  const limit = request.query.limit;
   const path = "/aliases";
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   try {
@@ -14,7 +16,7 @@ router.route("/").get(async (request: Request, response: Response) => {
     for (const alias of aliases) {
       alias.spotify_url = `https://open.spotify.com/playlist/${alias.plid}`;
     }
-    response.json(message(path, 200, aliases));
+    response.json(message(path, 200, validateLimit(aliases, limit)));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
     response.json(message(path, 500));

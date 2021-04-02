@@ -4,14 +4,19 @@ import {
   _fetchDBCollection,
   _fetchDBCollectionAppliedFilter,
 } from "../firebase/logic";
+import { validateLimit } from "../utils/helpers";
 import { message } from "../utils/responses";
 import { pruneSearches } from "./searches";
 const router = express.Router();
 
-router.route("/").get(async (_request: Request, response: Response) => {
+router.route("/").get(async (request: Request, response: Response) => {
+  const limit = request.query.limit;
   const path = `/requestors`;
   try {
-    const requestors = await _fetchDBCollection("requestors");
+    const requestors = validateLimit(
+      await _fetchDBCollection("requestors"),
+      limit
+    );
     response.json(message(path, 200, requestors));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
@@ -44,6 +49,7 @@ router
 router
   .route("/:userid/topsongs")
   .get(async (request: Request, response: Response) => {
+    const limit = request.query.limit;
     const userid: string = request.params.userid;
     const path = `/requestors/${userid}/topsongs`;
     try {
@@ -55,7 +61,10 @@ router
       );
       if (searches === null) return response.json(message(path, 204));
 
-      const sorted = findTopSongs(await pruneSearches(searches));
+      const sorted = validateLimit(
+        findTopSongs(await pruneSearches(searches)),
+        limit
+      );
       response.json(message(path, 200, sorted));
     } catch (error) {
       console.error(`[Juanita]: An error occured at '${path}': ${error}`);
@@ -63,11 +72,12 @@ router
     }
   });
 
-router.route("/top").get(async (_request: Request, response: Response) => {
+router.route("/top").get(async (request: Request, response: Response) => {
+  const limit = request.query.limit;
   const path = `/requestors/top`;
   try {
     const searches = await _fetchDBCollection("searches");
-    const requestors = await findRequestorPlays(searches);
+    const requestors = validateLimit(await findRequestorPlays(searches), limit);
     response.json(message(path, 200, requestors));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
