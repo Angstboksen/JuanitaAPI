@@ -30,7 +30,7 @@ const InteractiveForm: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const readOnly = route.enum !== RouteEnum.INITIAL;
-  const routeObj = routesMap.get(route.enum)!;
+  const [routeObj] = useState<Route>(routesMap.get(route.enum)!);
   const [limit, setLimit] = useState<number>(0);
   const [discord, setDiscord] = useState<string>("");
 

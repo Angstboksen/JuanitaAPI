@@ -119,7 +119,14 @@ const DrawerContainer: React.FC<Props> = ({ execute, updateUrl, url }) => {
             <Typography variant="inherit" noWrap>
               <img src={Picture} alt="Juanita" />
             </Typography>
-            <Typography variant="h6" noWrap>
+            <Typography
+              variant="h6"
+              noWrap
+              className="main-header"
+              onClick={() =>
+                handleRouteClick({ route: "/", enum: RouteEnum.INITIAL })
+              }
+            >
               Juanita API
             </Typography>
           </Toolbar>

@@ -122,3 +122,8 @@ li {
     font-weight: bold;
     text-decoration: underline;
 }
+
+.main-header:hover {
+    color: blue;
+    cursor: pointer;
+}
