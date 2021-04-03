@@ -30,7 +30,7 @@ router.route("/").get(async (request: Request, response: Response) => {
 router.route("/:userid").get(async (request: Request, response: Response) => {
   const limit = request.query.limit;
   const userid: string = request.params.userid;
-  const path = `/searches/requestor/${userid}`;
+  const path = `/searches/${userid}`;
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   try {
     const searches = await _fetchDBCollectionAppliedFilter(

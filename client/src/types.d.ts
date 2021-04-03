@@ -11,4 +11,10 @@ type Route = {
   base: string;
   description: JSX.Element;
   format: any;
+  isArray: boolean;
+};
+
+type MiniRoute = {
+  route: string;
+  enum: RouteEnum;
 };

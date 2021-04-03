@@ -62,7 +62,7 @@ router
       if (searches === null) return response.json(message(path, 204));
 
       const sorted = validateLimit(
-        findTopSongs(await pruneSearches(searches)),
+        findTopSongs(await pruneSearches(searches)).slice(0, 10),
         limit
       );
       response.json(message(path, 200, sorted));

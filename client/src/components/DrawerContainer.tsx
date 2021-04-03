@@ -15,13 +15,14 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/Inbox";
-import MailIcon from "@material-ui/icons/Mail";
+import MergeTypeTwoToneIcon from "@material-ui/icons/MergeTypeTwoTone";
 import InteractiveForm from "./InteractiveForm";
-import RouteInformation, { RouteEnum } from "./RouteInformation";
+import RouteInformation from "./RouteInformation";
 import Picture from "../media/juanita.png";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import { RouteEnum, routesMap } from "./RoutesArray";
 
-const drawerWidth = 240;
+const drawerWidth = "48%";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,20 +63,24 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
   },
 }));
 
 type Props = {
-  updateUrl: (url: string) => void;
+  updateUrl: (url: string, limit?: string) => void;
   execute: () => void;
+  url: string;
 };
 
-const DrawerContainer: React.FC<Props> = ({ execute, updateUrl }) => {
+const DrawerContainer: React.FC<Props> = ({ execute, updateUrl, url }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState<boolean>(false);
-  const [route, setRoute] = useState<RouteEnum>(RouteEnum.INITIAL);
+  const [route, setRoute] = useState<MiniRoute>({
+    route: "/",
+    enum: RouteEnum.INITIAL,
+  });
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -85,79 +90,197 @@ const DrawerContainer: React.FC<Props> = ({ execute, updateUrl }) => {
     setOpen(false);
   };
 
+  const handleRouteClick = (route: MiniRoute) => {
+    setRoute(route);
+    updateUrl(routesMap.get(route.enum)!.base);
+    handleDrawerClose();
+  };
+
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
-        })}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            className={clsx(classes.menuButton, open && classes.hide)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="inherit" noWrap>
-            <img src={Picture} alt="Juanita" />
-          </Typography>
-          <Typography variant="h6" noWrap>
-            Juanita API
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        className={classes.drawer}
-        variant="persistent"
-        anchor="left"
-        open={open}
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "ltr" ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
+    <ClickAwayListener onClickAway={handleDrawerClose}>
+      <div className={classes.root}>
+        <CssBaseline />
+        <AppBar
+          position="fixed"
+          className={clsx(classes.appBar, {
+            [classes.appBarShift]: open,
+          })}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, open && classes.hide)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="inherit" noWrap>
+              <img src={Picture} alt="Juanita" />
+            </Typography>
+            <Typography variant="h6" noWrap>
+              Juanita API
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          className={classes.drawer}
+          variant="persistent"
+          anchor="left"
+          open={open}
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+        >
+          <div className={classes.drawerHeader}>
+            <h2>Endpoints</h2>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === "ltr" ? (
+                <ChevronLeftIcon />
+              ) : (
+                <ChevronRightIcon />
+              )}
+            </IconButton>
+          </div>
+          <Divider />
+          <List>
+            <h4 className="margin-15">Information</h4>
+            {[{ route: "/", enum: RouteEnum.INITIAL }].map(
+              (route: MiniRoute, index: number) => (
+                <ListItem
+                  button
+                  key={index}
+                  onClick={() => handleRouteClick(route)}
+                >
+                  <ListItemIcon>
+                    <MergeTypeTwoToneIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Information page" />
+                </ListItem>
+              )
             )}
-          </IconButton>
+          </List>
+          <Divider />
+          <List>
+            <h4 className="margin-15">Base</h4>
+            {[{ route: "/", enum: RouteEnum.BASE }].map(
+              (route: MiniRoute, index: number) => (
+                <ListItem
+                  button
+                  key={index}
+                  onClick={() => handleRouteClick(route)}
+                >
+                  <ListItemIcon>
+                    <MergeTypeTwoToneIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={route.route} />
+                </ListItem>
+              )
+            )}
+          </List>
+          <Divider />
+          <List>
+            <h4 className="margin-15">Songs</h4>
+            {[
+              { route: "/songs", enum: RouteEnum.SONGS_BASE },
+              { route: "/songs/sotd", enum: RouteEnum.SONGS_SOTD },
+              { route: "/songs/sotw", enum: RouteEnum.SONGS_SOTW },
+              { route: "/songs/sotm", enum: RouteEnum.SONGS_SOTM },
+              { route: "/songs/random", enum: RouteEnum.SONGS_RANDOM },
+            ].map((route: MiniRoute, index: number) => (
+              <ListItem
+                button
+                key={index}
+                onClick={() => handleRouteClick(route)}
+              >
+                <ListItemIcon>
+                  <MergeTypeTwoToneIcon />
+                </ListItemIcon>
+                <ListItemText primary={route.route} />
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            <h4 className="margin-15">Searches</h4>
+            {[
+              { route: "/searches", enum: RouteEnum.SEARCHES_BASE },
+              {
+                route: "/searches/<discord_id>",
+                enum: RouteEnum.SEARCHES_USER,
+              },
+            ].map((route: MiniRoute, index: number) => (
+              <ListItem
+                button
+                key={index}
+                onClick={() => handleRouteClick(route)}
+              >
+                <ListItemIcon>
+                  <MergeTypeTwoToneIcon />
+                </ListItemIcon>
+                <ListItemText primary={route.route} />
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            <h4 className="margin-15">Requestors</h4>
+            {[
+              { route: "/requestors", enum: RouteEnum.REQUESTORS_BASE },
+              {
+                route: "/requestors/<discord_id>/topsongs",
+                enum: RouteEnum.REQUESTORS_TOPSONGS,
+              },
+              {
+                route: "/requestors/<discord_id>/topsong",
+                enum: RouteEnum.REQUESTORS_TOPSONG,
+              },
+              { route: "/requestors/top", enum: RouteEnum.REQUESTORS_TOP },
+            ].map((route: MiniRoute, index: number) => (
+              <ListItem
+                button
+                key={index}
+                onClick={() => handleRouteClick(route)}
+              >
+                <ListItemIcon>
+                  <MergeTypeTwoToneIcon />
+                </ListItemIcon>
+                <ListItemText primary={route.route} />
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            <h4 className="margin-15">Aliases</h4>
+            {[{ route: "/aliases", enum: RouteEnum.ALIASES_BASE }].map(
+              (route: MiniRoute, index: number) => (
+                <ListItem
+                  button
+                  key={index}
+                  onClick={() => handleRouteClick(route)}
+                >
+                  <ListItemIcon>
+                    <MergeTypeTwoToneIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={route.route} />
+                </ListItem>
+              )
+            )}
+          </List>
+          <Divider />
+        </Drawer>
+        <div className="form-route-wraper">
+          <RouteInformation route={route} />
+          <InteractiveForm
+            execute={execute}
+            updateUrl={updateUrl}
+            url={url}
+            route={route}
+          />
         </div>
-        <Divider />
-        <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-      <div className="form-route-wraper">
-        <RouteInformation route={route} />
-        <InteractiveForm execute={execute} updateUrl={updateUrl} />
       </div>
-    </div>
+    </ClickAwayListener>
   );
 };
 

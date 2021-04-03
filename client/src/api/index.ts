@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const baseURL = "https://juanitaapi.herokuapp.com";
+export const baseURL = "https://juanitaapi.herokuapp.com";
 
 export enum HTTPMethods {
   GET = "GET",
@@ -24,7 +24,7 @@ export const fetchFromAPI = async (
     ...(await response
       .json()
       .catch((err) => console.log("An error occured: " + err))),
-    status: response.status,
+    endpoint: url,
   };
   return returnObj;
 };

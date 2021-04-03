@@ -24,10 +24,6 @@ img {
     height: 50px;
 }
 
-.blue {
-    color: blue;
-}
-
 .flex-normal {
     height: inherit;
     display: flex;
@@ -75,7 +71,48 @@ li {
     margin-top: 70px;
 }
 
+.text-center {
+    text-align: center;
+}
+
 .json-pretty {
     width: 99%;
     margin-bottom: 60px;
+}
+
+.get {
+    padding: 5px;
+    font-weight: bold;
+}
+
+.green {
+    background-color: green;
+}
+
+.red {
+    background-color: red;
+}
+
+.orange {
+    background-color: orange;
+}
+
+.white {
+    background-color: white;
+}
+
+.purple-text {
+    color: purple;
+}
+
+.orange-text {
+    color: orange;
+}
+
+.blue-text {
+    color: blue;
+}
+
+.margin-15 {
+    margin-left: 15px;
 }

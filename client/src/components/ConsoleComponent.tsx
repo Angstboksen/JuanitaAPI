@@ -3,8 +3,9 @@ import React from "react";
 import JSONPretty from "react-json-pretty";
 
 type Props = {
-  json: string;
+  json: ResponseMessage;
   display: string;
+  statusColor: string;
   loaded: boolean;
   loading: boolean;
 };
@@ -12,13 +13,15 @@ type Props = {
 const ConsoleComponent: React.FC<Props> = ({
   json,
   display,
+  statusColor,
   loaded,
   loading,
 }) => {
   return (
     <div className="console">
       <h2>Juanita API console view</h2>
-      <pre>{display}</pre>
+      {!loaded && <h4>Here is an example of the fetched data format</h4>}
+      <pre className="text-center">{display}</pre>
       {loading ? (
         <>
           <pre>Loading data...</pre>
@@ -27,14 +30,12 @@ const ConsoleComponent: React.FC<Props> = ({
         </>
       ) : (
         <>
+          <pre className={`get ${statusColor}`}>{json.message}</pre>
           <JSONPretty className="json-pretty" data={json}></JSONPretty>
         </>
       )}
     </div>
   );
 };
-
-const defaultDisplay =
-  "Use the interactive API to display data in the console field";
 
 export default ConsoleComponent;

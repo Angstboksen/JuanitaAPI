@@ -1,53 +1,91 @@
 import React, { useState } from "react";
-import { fetchFromAPI, HTTPMethods } from "./api";
+import { baseURL, fetchFromAPI, HTTPMethods } from "./api";
 import "react-json-pretty/themes/acai.css";
 import ConsoleComponent from "./components/ConsoleComponent";
-import InteractiveForm from "./components/InteractiveForm";
 import DrawerContainer from "./components/DrawerContainer";
 
 const App: React.FC = () => {
   const [loaded, setLoaded] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [json, setJson] = useState<string>("");
+  const [json, setJson] = useState<ResponseMessage>(exampleDisplay);
+  const [statusColor, setStatusColor] = useState<string>("green");
   const [url, setUrl] = useState<string>("/");
 
   const execute = async () => {
     setLoading(true);
     const response: ResponseMessage = await fetchFromAPI(url, HTTPMethods.GET);
-    const pruned: string = pruneResponse(response);
+    const pruned = pruneResponse(response);
     setLoaded(true);
     setLoading(false);
+    getStatusColor(pruned);
     setJson(pruned);
   };
 
-  const updateUrl = (url: string) => {
-    setUrl(url);
+  const getStatusColor = (res: ResponseMessage) => {
+    let color;
+    switch (res.status) {
+      case 200:
+        color = "green";
+        break;
+      case 204:
+        color = "orange";
+        break;
+      case 400:
+        color = "red";
+        break;
+      case 404:
+        color = "red";
+        break;
+      case 500:
+        color = "red";
+        break;
+      default:
+        color = "green";
+    }
+    setStatusColor(color);
   };
 
-  const pruneResponse = (response: ResponseMessage): string => {
+  const updateUrl = (
+    base: string,
+    limit: string = ""
+  ) => {
+    const nUrl = `${base}${limit}`;
+    setUrl(nUrl);
+  };
+
+  const pruneResponse = (response: ResponseMessage): ResponseMessage => {
     const { endpoint, message, size, status, data } = response;
-    return JSON.stringify({
+    return {
       endpoint,
       status,
       message,
       size,
       data: data ? data : null,
-    });
+    };
   };
 
   return (
     <div className="App">
       <div className="flex-normal">
-        <DrawerContainer execute={execute} updateUrl={updateUrl} />
+        <DrawerContainer execute={execute} updateUrl={updateUrl} url={url} />
         <ConsoleComponent
           json={json}
           loaded={loaded}
+          statusColor={statusColor}
           loading={loading}
-          display={`GET http://localhost:8000${url}`}
+          display={`GET\n ${baseURL}${url}`}
         />
       </div>
     </div>
   );
+};
+
+const exampleDisplay: ResponseMessage = {
+  endpoint: "/",
+  status: 200,
+  message: "200 OK",
+  size: 1,
+  data: "{...}",
 };
 
 export default App;

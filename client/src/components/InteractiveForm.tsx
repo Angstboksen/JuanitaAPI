@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/Textfield";
 import { Button } from "@material-ui/core";
+import { RouteEnum, routesMap } from "./RoutesArray";
 
 type Props = {
-  updateUrl: (url: string) => void;
+  updateUrl: (url: string, limit?: string) => void;
   execute: () => void;
+  url: string;
+  route: MiniRoute;
 };
 
 const useStyles = makeStyles((theme: any) => ({
@@ -19,20 +22,57 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-const InteractiveForm: React.FC<Props> = ({ updateUrl, execute }) => {
+const InteractiveForm: React.FC<Props> = ({
+  updateUrl,
+  execute,
+  url,
+  route,
+}) => {
   const classes = useStyles();
+  const readOnly = route.enum !== RouteEnum.INITIAL;
+  const routeObj = routesMap.get(route.enum)!;
+  const [limit, setLimit] = useState<number>(0);
+  const [discord, setDiscord] = useState<string>("");
 
   const endpointChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     updateUrl(event.target.value);
   };
+
+  const discordIDChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setDiscord(value);
+    const nUrl = routeObj.base.replace("<discord_id: string>", value);
+    updateUrl(nUrl, `?limit=${limit}`);
+  };
+
+  const limitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    let l: number;
+    if (!Number.isNaN(+value)) {
+      l = +value;
+    } else {
+      l = 20;
+    }
+    setLimit(l);
+    const nUrl = routeObj.base.replace("<discord_id: string>", discord);
+    updateUrl(nUrl, `?limit=${l}`);
+  };
+
   const onSubmit = (event: any) => {
-    event.preventDefault()
-    execute()
-  }
+    event.preventDefault();
+    execute();
+  };
+
+  const userSpesific =
+    route.enum === RouteEnum.SEARCHES_USER ||
+    route.enum === RouteEnum.REQUESTORS_TOPSONGS ||
+    route.enum === RouteEnum.REQUESTORS_TOPSONG;
+  const { isArray } = routesMap.get(route.enum)!;
 
   return (
     <div className="pad-margin-no-top interactiveform">
+      <h3>Send a request</h3>
       <form
         id="interactive-form"
         className={classes.root}
@@ -41,14 +81,33 @@ const InteractiveForm: React.FC<Props> = ({ updateUrl, execute }) => {
         onSubmit={onSubmit}
       >
         <TextField
-          defaultValue="/"
           id="Endpoint"
           label="Endpoint"
           variant="filled"
           color="primary"
+          value={url}
+          disabled={readOnly}
           onChange={endpointChange}
-
         />
+        {userSpesific && (
+          <TextField
+            id="DiscordID"
+            label="Discord ID"
+            variant="filled"
+            color="primary"
+            onChange={discordIDChange}
+          />
+        )}
+        {isArray && (
+          <TextField
+            value={limit}
+            id="Limit"
+            label="Limit"
+            variant="filled"
+            color="primary"
+            onChange={limitChange}
+          />
+        )}
         <Button color="default" variant="contained" type="submit">
           Execute
         </Button>
