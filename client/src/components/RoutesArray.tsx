@@ -204,6 +204,38 @@ const routesArray: Route[] = [
             that by selecting one from the menu. All you need to do is follow
             the guide for each endpoint description.
           </p>
+          <h3>Possible HTTP responses</h3>
+          <h4>
+            <code className="get green">200 OK</code>
+          </h4>
+          <p>
+            Indicating that everything went well, and the data was retrieved.
+          </p>
+          <h4>
+            <code className="get orange">204 No Content</code>
+          </h4>
+          <p>
+            Indicating that everything went well, but no data is stored for the
+            provided user.
+          </p>
+          <h4>
+            <code className="get red">400 Bad Request</code>
+          </h4>
+          <p>
+            Indicating that the request you sent was not something the server
+            recognized.
+          </p>
+          <h4>
+            <code className="get red">404 Not Found</code>
+          </h4>
+          <p>
+            Indicating that the request went through, but no data could be
+            fetched from that endpoint.
+          </p>
+          <h4>
+            <code className="get red">500 Internal Sever Error</code>
+          </h4>
+          <p>Indicating that something is wrong on the server side.</p>
         </div>
       </div>
     ),
