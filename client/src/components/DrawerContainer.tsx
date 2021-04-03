@@ -181,6 +181,24 @@ const DrawerContainer: React.FC<Props> = ({ execute, updateUrl, url }) => {
           </List>
           <Divider />
           <List>
+            <h4 className="margin-15">Stats</h4>
+            {[{ route: "/stats", enum: RouteEnum.STATS_BASE }].map(
+              (route: MiniRoute, index: number) => (
+                <ListItem
+                  button
+                  key={index}
+                  onClick={() => handleRouteClick(route)}
+                >
+                  <ListItemIcon>
+                    <MergeTypeTwoToneIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={route.route} />
+                </ListItem>
+              )
+            )}
+          </List>
+          <Divider />
+          <List>
             <h4 className="margin-15">Songs</h4>
             {[
               { route: "/songs", enum: RouteEnum.SONGS_BASE },

@@ -10,7 +10,6 @@ type Route = {
   name: string;
   base: string;
   description: JSX.Element;
-  format: any;
   isArray: boolean;
 };
 

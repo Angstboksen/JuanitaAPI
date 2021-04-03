@@ -83,6 +83,7 @@ li {
 .get {
     padding: 5px;
     font-weight: bold;
+    color: white;
 }
 
 .green {
@@ -115,4 +116,9 @@ li {
 
 .margin-15 {
     margin-left: 15px;
+}
+
+.bold {
+    font-weight: bold;
+    text-decoration: underline;
 }

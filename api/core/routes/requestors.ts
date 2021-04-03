@@ -77,7 +77,10 @@ router.route("/top").get(async (request: Request, response: Response) => {
   const path = `/requestors/top`;
   try {
     const searches = await _fetchDBCollection("searches");
-    const requestors = validateLimit(await findRequestorPlays(searches), limit);
+    const requestors = validateLimit(
+      (await findRequestorPlays(searches)).slice(0, 10),
+      limit
+    );
     response.json(message(path, 200, requestors));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);

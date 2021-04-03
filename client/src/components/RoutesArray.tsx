@@ -207,15 +207,6 @@ const routesArray: Route[] = [
         </div>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: false,
   },
   {
@@ -223,7 +214,9 @@ const routesArray: Route[] = [
     base: "/",
     description: (
       <div>
-        <h3>Base endpoint</h3>
+        <h3>
+          <span className="orange-text">Base:</span> Home
+        </h3>
         <h4>
           Endpoint format: <code>{`${baseURL}/`}</code>
         </h4>
@@ -251,18 +244,21 @@ const routesArray: Route[] = [
             invite_link: "string",
           }}
         ></JSONPretty>
-        <h4>Return type: <code>Object</code></h4>
+        <h4>
+          Return type: <code>Object</code>
+        </h4>
+
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: false,
   },
   {
@@ -270,24 +266,69 @@ const routesArray: Route[] = [
     base: "/stats",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Stats:</span> Base endpoint for stats
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/stats`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want some overall stats
+            about Juanita's data.
+          </span>{" "}
+          The endpoint will return an object with miscellaneous statistics for
+          the data fetched by Juanita. This endpoint is constantly updating as
+          new sets of data are created constantly.{" "}
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            song_amount: "number",
+            search_amount: "number",
+            requestor_amount: "number",
+            alias_amount: "number",
+            song_of_the_day: {
+              seconds: "number",
+              thumbnail: "string",
+              url: "string",
+              title: "string",
+            },
+            song_of_the_week: {
+              seconds: "number",
+              thumbnail: "string",
+              url: "string",
+              title: "string",
+            },
+            song_of_the_month: {
+              seconds: "number",
+              thumbnail: "string",
+              url: "string",
+              title: "string",
+            },
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Object</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: false,
   },
   {
@@ -295,24 +336,51 @@ const routesArray: Route[] = [
     base: "/songs",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Songs:</span> Base endpoint for songs
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/songs`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve songs
+            played by Juanita.
+          </span>{" "}
+          The endpoint will return an array of songs. If a limit is not set, it
+          will retrieve all songs ever played by Juanita. This array is a set -
+          meaning that no song is represented twice.{" "}
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            url: "string",
+            seconds: "number",
+            title: "string",
+            thumbnail: "string",
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Array / Set</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: true,
   },
   {
@@ -320,24 +388,51 @@ const routesArray: Route[] = [
     base: "/songs/sotd",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Songs:</span> Song of the day
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/songs/sotd`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve the
+            song of the day.
+          </span>{" "}
+          Every day at midnight, Juanita picks a random song out of all songs
+          ever played and sets it as the "Song of the day". This endpoint will
+          retrieve this song.{" "}
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            url: "string",
+            seconds: "number",
+            title: "string",
+            thumbnail: "string",
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Object</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: false,
   },
   {
@@ -345,24 +440,51 @@ const routesArray: Route[] = [
     base: "/songs/sotw",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Songs:</span> Song of the week
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/songs/sotw`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve the
+            song of the week.
+          </span>{" "}
+          Every monday, Juanita picks a random song out of all songs ever played
+          and sets it as the "Song of the week". This endpoint will retrieve
+          this song.{" "}
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            url: "string",
+            seconds: "number",
+            title: "string",
+            thumbnail: "string",
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Object</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: false,
   },
   {
@@ -370,24 +492,51 @@ const routesArray: Route[] = [
     base: "/songs/sotm",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Songs:</span> Song of the month
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/songs/sotm`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve the
+            song of the month.
+          </span>{" "}
+          Every 1st of every month, Juanita picks a random song out of all songs
+          ever played and sets it as the "Song of the month". This endpoint will
+          retrieve this song.{" "}
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            url: "string",
+            seconds: "number",
+            title: "string",
+            thumbnail: "string",
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Object</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: false,
   },
   {
@@ -395,24 +544,50 @@ const routesArray: Route[] = [
     base: "/songs/random",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Songs:</span> Random song
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/songs/random`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve a
+            random song from the dataset.
+          </span>{" "}
+          Juanita has played hundreds of different songs since she started
+          jamming. This endpoint will return one of these songs - at random.{" "}
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            url: "string",
+            seconds: "number",
+            title: "string",
+            thumbnail: "string",
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Object</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: false,
   },
   {
@@ -420,24 +595,55 @@ const routesArray: Route[] = [
     base: "/searches",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Searches:</span> Base endpoint for
+          searches
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/searches`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve stored
+            searches for songs.
+          </span>{" "}
+          Whenever a Discord user plays a song with Juanita, she stores the song
+          and links it to the user. This makes it possible to have a link
+          between the user and songs played. This endpoint will retrieve the
+          whole dataset, if not a limit is set.
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            title: "string",
+            date: "date",
+            requestor: {
+              tag: "string",
+              id: "string",
+            },
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Array</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: true,
   },
   {
@@ -445,24 +651,63 @@ const routesArray: Route[] = [
     base: "/searches/<discord_id: string>",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Searches:</span> User spesific searches
+        </h3>
+        <h4>
+          Endpoint format:{" "}
+          <code>{`${baseURL}/searches/<discord_id: string>`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve
+            searches for a spesific user, and not the whole set.
+          </span>{" "}
+          Just like the base part of this endpoint, this one will retrieve
+          searches. This one however will return only the searches for a
+          spesific user. The searches will filter on the provided Discord user
+          id. If no limit is set, all of the searches for the user will be
+          retrieved.
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            title: "string",
+            date: "date",
+            requestor: {
+              tag: "string",
+              id: "string",
+            },
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Array</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get orange">204 No Content</code>
+        </h4>
+        <p>
+          Indicating that everything went well, but no data is stored for the
+          provided user.
+        </p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: true,
   },
   {
@@ -470,24 +715,50 @@ const routesArray: Route[] = [
     base: "/requestors",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Requestors:</span> Base endpoint for
+          requestors
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/requestors`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve all
+            Discord users Juanita has stored.
+          </span>{" "}
+          To be able to connect a Discord user to a search, Juanita stores the
+          users name tag and user id. This endpoint will retrieve all stored
+          requestors, if no limit is set.
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            tag: "string",
+            id: "string",
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Array</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: true,
   },
   {
@@ -495,24 +766,64 @@ const routesArray: Route[] = [
     base: "/requestors/<discord_id: string>/topsongs",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Requestors:</span> Top 10 searches for a
+          user
+        </h3>
+        <h4>
+          Endpoint format:{" "}
+          <code>{`${baseURL}/requestors/<discord_id: string>/topsongs`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve a users
+            top <code>10</code> searches.
+          </span>{" "}
+          The songs are sorted on playcount, and the set will never be larger
+          than <code>10</code> items. You can however set a limit. A limit of{" "}
+          <code>2</code> will retrieve the top <code>2</code> searches for the
+          user.
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            title: "string",
+            date: "date",
+            requestor: {
+              tag: "string",
+              id: "string",
+            },
+            plays: "number",
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Array / Set</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get orange">204 No Content</code>
+        </h4>
+        <p>
+          Indicating that everything went well, but no data is stored for the
+          provided user.
+        </p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: true,
   },
   {
@@ -520,24 +831,62 @@ const routesArray: Route[] = [
     base: "/requestors/<discord_id: string>/topsong",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Requestors:</span> Top search for a user
+        </h3>
+        <h4>
+          Endpoint format:{" "}
+          <code>{`${baseURL}/requestors/<discord_id: string>/topsong`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve a users
+            top search.
+          </span>{" "}
+          This endpoint will retrieve the top search for a user. The retrieved
+          object will be the same as the first item retrieved by{" "}
+          <code>/topsongs</code>.
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            title: "string",
+            date: "date",
+            requestor: {
+              tag: "string",
+              id: "string",
+            },
+            plays: "number",
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Object</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get orange">204 No Content</code>
+        </h4>
+        <p>
+          Indicating that everything went well, but no data is stored for the
+          provided user.
+        </p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: false,
   },
   {
@@ -545,24 +894,51 @@ const routesArray: Route[] = [
     base: "/requestors/top",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Requestors:</span> Top 10 users by count
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/requestors/top`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve the top{" "}
+            <code>10</code> most active users.
+          </span>{" "}
+          This endpoint will retrieve a set of the top <code>10</code> most
+          active users. The objects are sorted on how many songs they have
+          played with Juanita. The set will never be larger than <code>10</code>{" "}
+          items, but you can set a limit just as with <code>/topsongs</code>.
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            tag: "string",
+            id: "string",
+            plays: "number",
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Array / Set</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: true,
   },
   {
@@ -570,24 +946,55 @@ const routesArray: Route[] = [
     base: "/aliases",
     description: (
       <div>
-        <h3>Introduction</h3>
+        <h3>
+          <span className="orange-text">Aliases:</span> Base endpoint for
+          aliases
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/aliases`}</code>
+        </h4>
         <p>
-          Welcome to the reference for the Juanita API. This makes it possible
-          to crawl though the dataset collected by the
-          <a href={botLink}> Discord bot </a> and view all kinds of stats
-          related to it.
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve the
+            aliases for Spotify playlists stored.
+          </span>{" "}
+          This is a part of the new functionality for Juanita following the
+          revamp. Juanita is now able to queue a whole Spotify playlist if the
+          user provides the playlist id. If you do not want to find this ID
+          every time, you can ask Juanita to store it with an alias. This
+          endpoint will list all the aliases currently stored if not a limit is
+          set.
         </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            name: "string",
+            alias: "string",
+            plid: "string",
+            spotify_url: "string",
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Array / Set</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
       </div>
     ),
-    format: {
-      name: "string",
-      type: "string",
-      date: "date",
-      author: "string",
-      github_repository: "string",
-      discord_bot: "string",
-      invite_link: "string",
-    },
     isArray: true,
   },
 ];
