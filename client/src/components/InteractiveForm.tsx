@@ -34,19 +34,21 @@ const InteractiveForm: React.FC<Props> = ({
   const [limit, setLimit] = useState<number>(0);
   const [discord, setDiscord] = useState<string>("");
 
-  const endpointChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const endpointChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     updateUrl(event.target.value);
   };
 
-  const discordIDChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const discordIDChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const { value } = event.target;
     setDiscord(value);
     const nUrl = routeObj.base.replace("<discord_id: string>", value);
     updateUrl(nUrl, `?limit=${limit}`);
   };
 
-  const limitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const limitChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     let l: number;
     if (!Number.isNaN(+value)) {
@@ -59,8 +61,10 @@ const InteractiveForm: React.FC<Props> = ({
     updateUrl(nUrl, `?limit=${l}`);
   };
 
-  const onSubmit = (event: any) => {
+  const onSubmit = async (event: any) => {
     event.preventDefault();
+    setLimit(0);
+    setDiscord("");
     execute();
   };
 
@@ -91,6 +95,7 @@ const InteractiveForm: React.FC<Props> = ({
         />
         {userSpesific && (
           <TextField
+            value={discord}
             id="DiscordID"
             label="Discord ID"
             variant="filled"

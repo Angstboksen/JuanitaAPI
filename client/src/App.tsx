@@ -45,10 +45,7 @@ const App: React.FC = () => {
     setStatusColor(color);
   };
 
-  const updateUrl = (
-    base: string,
-    limit: string = ""
-  ) => {
+  const updateUrl = async (base: string, limit: string = "") => {
     const nUrl = `${base}${limit}`;
     setUrl(nUrl);
   };
