@@ -7,6 +7,7 @@ export enum RouteEnum {
   INITIAL = "initial",
   BASE = "base",
   STATS_BASE = "stats_base",
+  STATS_PLAYTIME = "stats_playtime",
   ALIASES_BASE = "aliases_base",
   SONGS_BASE = "songs_base",
   SONGS_SOTD = "songs_sotd",
@@ -32,7 +33,7 @@ const routesArray: Route[] = [
           <h2>Introduction</h2>
           <p>
             Welcome to the reference for the Juanita API. This makes it possible
-            to walk though the dataset collected by the{" "}
+            to walk through the dataset collected by the{" "}
             <a href={botLink} target="_blank" rel="noreferrer">
               Discord bot
             </a>{" "}
@@ -58,6 +59,11 @@ const routesArray: Route[] = [
               </li>
               <li>
                 <code>/stats</code> Stats about the bot
+                <ul>
+                  <li>
+                    <code>/playtime</code> Total playtime
+                  </li>
+                </ul>
               </li>
               <li>
                 <code>/songs</code> All songs ever played with Juanita
@@ -323,28 +329,60 @@ const routesArray: Route[] = [
         <JSONPretty
           className="pretty-json"
           data={{
-            song_amount: "number",
-            search_amount: "number",
-            requestor_amount: "number",
-            alias_amount: "number",
-            song_of_the_day: {
+            playtime: {
               seconds: "number",
-              thumbnail: "string",
-              url: "string",
-              title: "string",
+              readable: "string",
             },
-            song_of_the_week: {
-              seconds: "number",
-              thumbnail: "string",
-              url: "string",
-              title: "string",
-            },
-            song_of_the_month: {
-              seconds: "number",
-              thumbnail: "string",
-              url: "string",
-              title: "string",
-            },
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Object</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
+      </div>
+    ),
+    isArray: false,
+  },
+  {
+    name: RouteEnum.STATS_PLAYTIME,
+    base: "/stats/playtime",
+    description: (
+      <div>
+        <h3>
+          <span className="orange-text">Stats:</span> Total playtime
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/stats/playtime`}</code>
+        </h4>
+        <p>
+          <span className="bold">
+            This is the endpoint you want to use if you want to know the total
+            playtime of Juanita.
+          </span>{" "}
+          Whenever a search is stored, Juanita also stores the length of that
+          song. This is added to a total which can be retrieved at this
+          endpoint.{" "}
+        </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            seconds: "number",
+            readable: "string",
           }}
         ></JSONPretty>
         <h4>

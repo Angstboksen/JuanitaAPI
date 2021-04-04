@@ -35,4 +35,5 @@ export type JuanitaStats = {
   song_of_the_day: Song;
   song_of_the_week: Song;
   song_of_the_month: Song;
+  playtime: { seconds: number; readable: string };
 };
