@@ -1,8 +1,14 @@
 import firestoreConnection from "./connection";
 import schedule from "node-schedule";
 
-export const _fetchDBCollection = async (collectionName: string) => {
-  const snapshot = await firestoreConnection.collection(collectionName).get();
+export const _fetchDBCollection = async (
+  collectionName: string,
+  limit: number = 0
+) => {
+  const snapshot = await firestoreConnection
+    .collection(collectionName)
+    .limit(limit)
+    .get();
   const data: any[] = [];
   snapshot.forEach((doc) => {
     data.push(doc.data());
@@ -25,11 +31,13 @@ export const _fetchDBCollectionAppliedFilter = async (
   collectionName: string,
   documentField: string,
   queryOperator: any,
-  fieldValue: string
+  fieldValue: string,
+  limit: number = 0
 ) => {
   const snapshot = await firestoreConnection
     .collection(collectionName)
     .where(documentField, queryOperator, fieldValue)
+    .limit(limit)
     .get();
   if (snapshot.empty) {
     console.log("[*] No documents matched the query.");

@@ -1,6 +1,6 @@
-export const validateLimit = (array: any[], limit: any) => {
+export const validateLimit = (limit: any) => {
   if (limit !== undefined && +limit > 0) {
-    return array.slice(0, +limit);
+    return true;
   }
-  return array;
+  return false;
 };

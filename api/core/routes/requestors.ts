@@ -12,11 +12,11 @@ const router = express.Router();
 router.route("/").get(async (request: Request, response: Response) => {
   const limit = request.query.limit;
   const path = `/requestors`;
+  let requestors;
   try {
-    const requestors = validateLimit(
-      await _fetchDBCollection("requestors"),
-      limit
-    );
+    if (validateLimit(limit))
+      requestors = await _fetchDBCollection("requestors", +limit!);
+    else requestors = await _fetchDBCollection("requestors");
     response.json(message(path, 200, requestors));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
@@ -52,19 +52,26 @@ router
     const limit = request.query.limit;
     const userid: string = request.params.userid;
     const path = `/requestors/${userid}/topsongs`;
+    let searches;
     try {
-      const searches = await _fetchDBCollectionAppliedFilter(
-        "searches",
-        "requestor.id",
-        "=",
-        userid
-      );
+      if (validateLimit(limit))
+        searches = await _fetchDBCollectionAppliedFilter(
+          "searches",
+          "requestor.id",
+          "=",
+          userid,
+          +limit!
+        );
+      else
+        searches = await _fetchDBCollectionAppliedFilter(
+          "searches",
+          "requestor.id",
+          "=",
+          userid
+        );
       if (searches === null) return response.json(message(path, 204));
 
-      const sorted = validateLimit(
-        findTopSongs(await pruneSearches(searches)).slice(0, 10),
-        limit
-      );
+      const sorted = findTopSongs(await pruneSearches(searches));
       response.json(message(path, 200, sorted));
     } catch (error) {
       console.error(`[Juanita]: An error occured at '${path}': ${error}`);
@@ -77,10 +84,7 @@ router.route("/top").get(async (request: Request, response: Response) => {
   const path = `/requestors/top`;
   try {
     const searches = await _fetchDBCollection("searches");
-    const requestors = validateLimit(
-      (await findRequestorPlays(searches)).slice(0, 10),
-      limit
-    );
+    const requestors = await findRequestorPlays(searches);
     response.json(message(path, 200, requestors));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
