@@ -31,7 +31,7 @@ const InteractiveForm: React.FC<Props> = ({
   const classes = useStyles();
   const readOnly = route.enum !== RouteEnum.INITIAL;
   const routeObj = routesMap.get(route.enum)!;
-  const [limit, setLimit] = useState<number>(0);
+  const [limit, setLimit] = useState<number>(50);
   const [discord, setDiscord] = useState<string>("");
 
   const endpointChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +63,7 @@ const InteractiveForm: React.FC<Props> = ({
 
   const onSubmit = async (event: any) => {
     event.preventDefault();
-    setLimit(0);
+    setLimit(50);
     setDiscord("");
     execute();
   };
