@@ -17,11 +17,13 @@ export const _fetchDBCollection = async (
 };
 export const _fetchDBCollectionAndSort = async (
   collectionName: string,
+  field: string,
+  format: FirebaseFirestore.OrderByDirection,
   limit: number = 0
 ) => {
   const snapshot = await firestoreConnection
     .collection(collectionName)
-    .orderBy("date", "desc")
+    .orderBy(field, format)
     .limit(limit)
     .get();
   const data: any[] = [];

@@ -20,11 +20,11 @@ router.route("/").get(async (request: Request, response: Response) => {
   try {
     if (validateLimit(limit))
       searches = await pruneSearches(
-        await _fetchDBCollectionAndSort("searches", +limit!)
+        await _fetchDBCollectionAndSort("searches", "date", "desc", +limit!)
       );
     else
       searches = await pruneSearches(
-        await _fetchDBCollectionAndSort("searches")
+        await _fetchDBCollectionAndSort("searches", "date", "desc")
       );
     if (searches === null) return response.json(message(path, 204));
     response.json(message(path, 200, searches));

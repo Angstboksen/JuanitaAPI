@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { SearchObject, SearchRequestor } from "../../types";
 import {
   _fetchDBCollection,
+  _fetchDBCollectionAndSort,
   _fetchDBCollectionAppliedFilter,
 } from "../firebase/logic";
 import { validateLimit } from "../utils/helpers";
@@ -12,6 +13,7 @@ const router = express.Router();
 router.route("/").get(async (request: Request, response: Response) => {
   const limit = request.query.limit;
   const path = `/requestors`;
+  console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   let requestors;
   try {
     if (validateLimit(limit))
@@ -52,7 +54,7 @@ router
     const limit = request.query.limit;
     const userid: string = request.params.userid;
     const path = `/requestors/${userid}/topsongs`;
-    let searches;
+    console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
     try {
       const searches = await _fetchDBCollectionAppliedFilter(
         "searches",
@@ -76,12 +78,23 @@ router
 router.route("/top").get(async (request: Request, response: Response) => {
   const limit = request.query.limit;
   const path = `/requestors/top`;
+  console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   try {
-    const searches = await _fetchDBCollection("searches");
     let requestors;
     if (validateLimit(limit) && +limit! > 0 && +limit! < 10)
-      requestors = (await findRequestorPlays(searches)).slice(0, +limit!);
-    else requestors = (await findRequestorPlays(searches)).slice(0, 10);
+      requestors = await _fetchDBCollectionAndSort(
+        "requestors",
+        "plays",
+        "desc",
+        +limit!
+      );
+    else
+      requestors = await _fetchDBCollectionAndSort(
+        "requestors",
+        "plays",
+        "desc",
+        10
+      );
     response.json(message(path, 200, requestors));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
@@ -110,7 +123,8 @@ export const findTopSongs = (searches: SearchObject[]) => {
       const found = sorted.find(
         (song: SearchObject) => song.title === search.title
       )!;
-      if (new Date(search.date) > new Date(found.date)) found.date = search.date;
+      if (new Date(search.date) > new Date(found.date))
+        found.date = search.date;
       found.plays!++;
     } else {
       container.push(search.title);
