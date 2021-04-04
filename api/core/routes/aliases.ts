@@ -11,12 +11,15 @@ router.route("/").get(async (request: Request, response: Response) => {
   const limit = request.query.limit;
   const path = "/aliases";
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
+  let aliases;
   try {
-    const aliases = await _fetchDBCollection("aliases");
+    if (validateLimit(limit))
+      aliases = await _fetchDBCollection("aliases", +limit!);
+    else aliases = await _fetchDBCollection("aliases");
     for (const alias of aliases) {
       alias.spotify_url = `https://open.spotify.com/playlist/${alias.plid}`;
     }
-    response.json(message(path, 200, validateLimit(aliases, limit)));
+    response.json(message(path, 200, aliases));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
     response.json(message(path, 500));

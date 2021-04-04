@@ -12,8 +12,11 @@ router.route("/").get(async (request: Request, response: Response) => {
   const limit = request.query.limit;
   const path = "/songs";
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
+  let songs;
   try {
-    const songs = validateLimit(await _fetchDBCollection("songs"), limit);
+    if (validateLimit(limit))
+      songs = await _fetchDBCollection("songs", +limit!);
+    else songs = await _fetchDBCollection("songs");
     response.json(message(path, 200, songs));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);

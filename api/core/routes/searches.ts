@@ -16,11 +16,16 @@ router.route("/").get(async (request: Request, response: Response) => {
   const limit = request.query.limit;
   const path = "/searches";
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
+  let searches;
   try {
-    const searches = validateLimit(
-      await pruneSearches(await _fetchDBCollectionAndSort("searches")),
-      limit
-    );
+    if (validateLimit(limit))
+      searches = await pruneSearches(
+        await _fetchDBCollectionAndSort("searches", +limit!)
+      );
+    else
+      searches = await pruneSearches(
+        await _fetchDBCollectionAndSort("searches")
+      );
     if (searches === null) return response.json(message(path, 204));
     response.json(message(path, 200, searches));
   } catch (error) {
@@ -34,17 +39,25 @@ router.route("/:userid").get(async (request: Request, response: Response) => {
   const userid: string = request.params.userid;
   const path = `/searches/${userid}`;
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
+  let searches;
   try {
-    const searches = await _fetchDBCollectionAppliedFilterAndSort(
-      "searches",
-      "requestor.id",
-      "=",
-      userid
-    );
+    if (validateLimit(limit))
+      searches = await _fetchDBCollectionAppliedFilterAndSort(
+        "searches",
+        "requestor.id",
+        "==",
+        userid,
+        +limit!
+      );
+    else
+      searches = await _fetchDBCollectionAppliedFilterAndSort(
+        "searches",
+        "requestor.id",
+        "==",
+        userid
+      );
     if (searches === null) return response.json(message(path, 204));
-    response.json(
-      message(path, 200, validateLimit(await pruneSearches(searches), limit))
-    );
+    response.json(message(path, 200, await pruneSearches(searches)));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
     response.json(message(path, 500));
@@ -59,17 +72,25 @@ router.route("/requestor").get(async (request: Request, response: Response) => {
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   if (!name || !disc) return response.json(message(path, 400));
   const usertag = `${name}#${disc}`;
+  let searches;
   try {
-    const searches = await _fetchDBCollectionAppliedFilterAndSort(
-      "searches",
-      "requestor.tag",
-      "=",
-      usertag
-    );
+    if (validateLimit(limit))
+      searches = await _fetchDBCollectionAppliedFilterAndSort(
+        "searches",
+        "requestor.tag",
+        "=",
+        usertag,
+        +limit!
+      );
+    else
+      searches = await _fetchDBCollectionAppliedFilterAndSort(
+        "searches",
+        "requestor.tag",
+        "=",
+        usertag
+      );
     if (searches === null) return response.json(message(path, 204));
-    response.json(
-      message(path, 200, validateLimit(await pruneSearches(searches), limit))
-    );
+    response.json(message(path, 200, await pruneSearches(searches)));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
     response.json(message(path, 500));
