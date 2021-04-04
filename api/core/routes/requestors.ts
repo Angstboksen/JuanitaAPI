@@ -54,24 +54,18 @@ router
     const path = `/requestors/${userid}/topsongs`;
     let searches;
     try {
-      if (validateLimit(limit))
-        searches = await _fetchDBCollectionAppliedFilter(
-          "searches",
-          "requestor.id",
-          "=",
-          userid,
-          +limit!
-        );
-      else
-        searches = await _fetchDBCollectionAppliedFilter(
-          "searches",
-          "requestor.id",
-          "=",
-          userid
-        );
+      const searches = await _fetchDBCollectionAppliedFilter(
+        "searches",
+        "requestor.id",
+        "=",
+        userid
+      );
       if (searches === null) return response.json(message(path, 204));
+      let sorted;
+      if (validateLimit(limit) && +limit! > 0 && +limit! < 10)
+        sorted = findTopSongs(await pruneSearches(searches)).slice(0, +limit!);
+      else sorted = findTopSongs(await pruneSearches(searches)).slice(0, 10);
 
-      const sorted = findTopSongs(await pruneSearches(searches));
       response.json(message(path, 200, sorted));
     } catch (error) {
       console.error(`[Juanita]: An error occured at '${path}': ${error}`);
