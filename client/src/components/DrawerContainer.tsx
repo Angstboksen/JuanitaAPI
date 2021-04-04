@@ -69,11 +69,17 @@ const useStyles = makeStyles((theme) => ({
 
 type Props = {
   updateUrl: (url: string, limit?: string) => void;
+  overrideUrl: (url: string) => void;
   execute: () => void;
   url: string;
 };
 
-const DrawerContainer: React.FC<Props> = ({ execute, updateUrl, url }) => {
+const DrawerContainer: React.FC<Props> = ({
+  execute,
+  updateUrl,
+  overrideUrl,
+  url,
+}) => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState<boolean>(false);
@@ -300,6 +306,7 @@ const DrawerContainer: React.FC<Props> = ({ execute, updateUrl, url }) => {
           <InteractiveForm
             execute={execute}
             updateUrl={updateUrl}
+            overrideUrl={overrideUrl}
             url={url}
             route={route}
           />

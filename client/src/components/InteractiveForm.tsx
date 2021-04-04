@@ -6,6 +6,7 @@ import { RouteEnum, routesMap } from "./RoutesArray";
 
 type Props = {
   updateUrl: (url: string, limit?: string) => void;
+  overrideUrl: (url: string) => void;
   execute: () => void;
   url: string;
   route: MiniRoute;
@@ -24,6 +25,7 @@ const useStyles = makeStyles((theme: any) => ({
 
 const InteractiveForm: React.FC<Props> = ({
   updateUrl,
+  overrideUrl,
   execute,
   url,
   route,
@@ -36,7 +38,7 @@ const InteractiveForm: React.FC<Props> = ({
 
   const endpointChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
-    updateUrl(event.target.value);
+    overrideUrl(event.target.value);
   };
 
   const discordIDChange = async (

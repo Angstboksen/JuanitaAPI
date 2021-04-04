@@ -50,6 +50,10 @@ const App: React.FC = () => {
     setUrl(nUrl);
   };
 
+  const overrideUrl = async (nUrl: string) => {
+    setUrl(nUrl);
+  };
+
   const pruneResponse = (response: ResponseMessage): ResponseMessage => {
     const { endpoint, message, size, status, data } = response;
     return {
@@ -64,7 +68,12 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <div className="flex-normal">
-        <DrawerContainer execute={execute} updateUrl={updateUrl} url={url} />
+        <DrawerContainer
+          execute={execute}
+          overrideUrl={overrideUrl}
+          updateUrl={updateUrl}
+          url={url}
+        />
         <ConsoleComponent
           json={json}
           loaded={loaded}

@@ -5,12 +5,11 @@ import {
   _fetchDBCollectionWithDoc,
 } from "../firebase/logic";
 import { message } from "../utils/responses";
-import { findRequestorPlays } from "./requestors";
-import moment from "moment";
 const router = express.Router();
 
-router.route("/").get(async (_request: Request, response: Response) => {
+router.route("/").get(async (request: Request, response: Response) => {
   const path = `/stats`;
+  console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   try {
     const requestors = await _fetchDBCollection("requestors");
     const searches = await _fetchDBCollection("searches");
@@ -36,11 +35,28 @@ router.route("/").get(async (_request: Request, response: Response) => {
   }
 });
 
-export const secondsToTimestamp = (seconds: number): string => {
-  if (seconds < 3600) {
-    return moment().startOf("day").seconds(seconds).format("mm:ss");
+router.route("/playtime").get(async (request: Request, response: Response) => {
+  const path = `/stats/playtime`;
+  console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
+  try {
+    const playtime = await _fetchDBCollectionWithDoc("specials", "playtime");
+    const converted = {
+      seconds: playtime!.seconds,
+      readable: secondsToTimestamp(playtime!.seconds),
+    };
+    response.json(message(path, 200, converted));
+  } catch (error) {
+    console.error(`[Juanita]: An error occured at '${path}': ${error}`);
+    response.json(message(path, 500));
   }
-  return moment().startOf("day").seconds(seconds).format("HH:mm:ss");
+});
+
+export const secondsToTimestamp = (seconds: number): string => {
+  var d = Math.floor(seconds / (3600 * 24));
+  var h = Math.floor((seconds % (3600 * 24)) / 3600);
+  var m = Math.floor((seconds % 3600) / 60);
+  var s = Math.floor(seconds % 60);
+  return `${d} days, ${h} hours, ${m} minutes, and ${s} seconds`;
 };
 
 export default router;
