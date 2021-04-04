@@ -78,7 +78,10 @@ router.route("/top").get(async (request: Request, response: Response) => {
   const path = `/requestors/top`;
   try {
     const searches = await _fetchDBCollection("searches");
-    const requestors = await findRequestorPlays(searches);
+    let requestors;
+    if (validateLimit(limit) && +limit! > 0 && +limit! < 10)
+      requestors = (await findRequestorPlays(searches)).slice(0, +limit!);
+    else requestors = (await findRequestorPlays(searches)).slice(0, 10);
     response.json(message(path, 200, requestors));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
@@ -107,6 +110,7 @@ export const findTopSongs = (searches: SearchObject[]) => {
       const found = sorted.find(
         (song: SearchObject) => song.title === search.title
       )!;
+      if (new Date(search.date) > new Date(found.date)) found.date = search.date;
       found.plays!++;
     } else {
       container.push(search.title);
