@@ -4,6 +4,8 @@ import {
   _fetchDBCollection,
   _fetchDBCollectionWithDoc,
   _fetchDBCollectionAppliedFilter,
+  _fetchDBCollectionAppliedFilterAndSort,
+  _fetchDBCollectionAndSort,
 } from "../firebase/logic";
 import { validateLimit } from "../utils/helpers";
 import { message } from "../utils/responses";
@@ -16,7 +18,7 @@ router.route("/").get(async (request: Request, response: Response) => {
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   try {
     const searches = validateLimit(
-      await pruneSearches(await _fetchDBCollection("searches")),
+      await pruneSearches(await _fetchDBCollectionAndSort("searches")),
       limit
     );
     if (searches === null) return response.json(message(path, 204));
@@ -33,7 +35,7 @@ router.route("/:userid").get(async (request: Request, response: Response) => {
   const path = `/searches/${userid}`;
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   try {
-    const searches = await _fetchDBCollectionAppliedFilter(
+    const searches = await _fetchDBCollectionAppliedFilterAndSort(
       "searches",
       "requestor.id",
       "=",
@@ -58,7 +60,7 @@ router.route("/requestor").get(async (request: Request, response: Response) => {
   if (!name || !disc) return response.json(message(path, 400));
   const usertag = `${name}#${disc}`;
   try {
-    const searches = await _fetchDBCollectionAppliedFilter(
+    const searches = await _fetchDBCollectionAppliedFilterAndSort(
       "searches",
       "requestor.tag",
       "=",

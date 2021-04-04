@@ -9,6 +9,17 @@ export const _fetchDBCollection = async (collectionName: string) => {
   });
   return data;
 };
+export const _fetchDBCollectionAndSort = async (collectionName: string) => {
+  const snapshot = await firestoreConnection
+    .collection(collectionName)
+    .orderBy("date", "desc")
+    .get();
+  const data: any[] = [];
+  snapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+};
 
 export const _fetchDBCollectionWithDoc = async (
   collectionName: string,
@@ -31,6 +42,24 @@ export const _fetchDBCollectionAppliedFilter = async (
     .collection(collectionName)
     .where(documentField, queryOperator, fieldValue)
     .get();
+  if (snapshot.empty) {
+    console.log("[*] No documents matched the query.");
+    return null;
+  }
+};
+
+export const _fetchDBCollectionAppliedFilterAndSort = async (
+  collectionName: string,
+  documentField: string,
+  queryOperator: any,
+  fieldValue: string
+) => {
+  const snapshot = await firestoreConnection
+    .collection(collectionName)
+    .orderBy("date", "desc")
+    .where(documentField, queryOperator, fieldValue)
+    .get();
+  console.log(snapshot);
   if (snapshot.empty) {
     console.log("[*] No documents matched the query.");
     return null;
