@@ -6,6 +6,8 @@ import {
   _fetchDBCollectionAppliedFilter,
   _fetchDBCollectionAppliedFilterAndSort,
   _fetchDBCollectionAndSort,
+  _inceptionCollection,
+  _inceptionCollectionAndSort,
 } from "../firebase/logic";
 import { validateLimit } from "../utils/helpers";
 import { message } from "../utils/responses";
@@ -42,54 +44,23 @@ router.route("/:userid").get(async (request: Request, response: Response) => {
   let searches;
   try {
     if (validateLimit(limit))
-      searches = await _fetchDBCollectionAppliedFilterAndSort(
-        "searches",
-        "requestor.id",
-        "==",
+      searches = await _inceptionCollectionAndSort(
+        "requestors",
         userid,
+        "searches",
+        "date",
+        "desc",
         +limit!
       );
     else
-      searches = await _fetchDBCollectionAppliedFilterAndSort(
+      searches = searches = await _inceptionCollectionAndSort(
+        "requestors",
+        userid,
         "searches",
-        "requestor.id",
-        "==",
-        userid
+        "date",
+        "desc"
       );
-    if (searches === null) return response.json(message(path, 204));
-    response.json(message(path, 200, await pruneSearches(searches)));
-  } catch (error) {
-    console.error(`[Juanita]: An error occured at '${path}': ${error}`);
-    response.json(message(path, 500));
-  }
-});
-
-router.route("/requestor").get(async (request: Request, response: Response) => {
-  const name: string = request.query.name as string;
-  const disc: string = request.query.disc as string;
-  const limit = request.query.limit;
-  const path = `/searches/requestor/?name=${name}&disc=${disc}`;
-  console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
-  if (!name || !disc) return response.json(message(path, 400));
-  const usertag = `${name}#${disc}`;
-  let searches;
-  try {
-    if (validateLimit(limit))
-      searches = await _fetchDBCollectionAppliedFilterAndSort(
-        "searches",
-        "requestor.tag",
-        "=",
-        usertag,
-        +limit!
-      );
-    else
-      searches = await _fetchDBCollectionAppliedFilterAndSort(
-        "searches",
-        "requestor.tag",
-        "=",
-        usertag
-      );
-    if (searches === null) return response.json(message(path, 204));
+    if (searches.length === 0) return response.json(message(path, 204));
     response.json(message(path, 200, await pruneSearches(searches)));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);

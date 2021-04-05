@@ -15,6 +15,48 @@ export const _fetchDBCollection = async (
   });
   return data;
 };
+
+export const _inceptionCollection = async (
+  collectionName: string,
+  docRef: string,
+  subCollection: string,
+  limit: number = 0
+) => {
+  const snapshot = await firestoreConnection
+    .collection(collectionName)
+    .doc(docRef)
+    .collection(subCollection)
+    .limit(limit)
+    .get();
+  const data: any[] = [];
+  snapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+};
+
+export const _inceptionCollectionAndSort = async (
+  collectionName: string,
+  docRef: string,
+  subCollection: string,
+  field: string,
+  format: FirebaseFirestore.OrderByDirection,
+  limit: number = 0
+) => {
+  const snapshot = await firestoreConnection
+    .collection(collectionName)
+    .doc(docRef)
+    .collection(subCollection)
+    .orderBy(field, format)
+    .limit(limit)
+    .get();
+  const data: any[] = [];
+  snapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+};
+
 export const _fetchDBCollectionAndSort = async (
   collectionName: string,
   field: string,

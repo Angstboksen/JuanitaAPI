@@ -4,6 +4,8 @@ import {
   _fetchDBCollection,
   _fetchDBCollectionAndSort,
   _fetchDBCollectionAppliedFilter,
+  _inceptionCollection,
+  _inceptionCollectionAndSort,
 } from "../firebase/logic";
 import { validateLimit } from "../utils/helpers";
 import { message } from "../utils/responses";
@@ -32,13 +34,12 @@ router
     const userid: string = request.params.userid;
     const path = `/requestors/${userid}/topsong`;
     try {
-      const searches = await _fetchDBCollectionAppliedFilter(
-        "searches",
-        "requestor.id",
-        "=",
-        userid
+      const searches = await _inceptionCollection(
+        "requestors",
+        userid,
+        "searches"
       );
-      if (searches === null) return response.json(message(path, 204));
+      if (searches.length === 0) return response.json(message(path, 204));
 
       const sorted = findTopSongs(await pruneSearches(searches));
       response.json(message(path, 200, sorted[0]));
@@ -56,13 +57,12 @@ router
     const path = `/requestors/${userid}/topsongs`;
     console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
     try {
-      const searches = await _fetchDBCollectionAppliedFilter(
-        "searches",
-        "requestor.id",
-        "=",
-        userid
+      const searches = await _inceptionCollection(
+        "requestors",
+        userid,
+        "searches"
       );
-      if (searches === null) return response.json(message(path, 204));
+      if (searches.length === 0) return response.json(message(path, 204));
       let sorted;
       if (validateLimit(limit) && +limit! > 0 && +limit! < 10)
         sorted = findTopSongs(await pruneSearches(searches)).slice(0, +limit!);
@@ -92,8 +92,7 @@ router.route("/top").get(async (request: Request, response: Response) => {
       requestors = await _fetchDBCollectionAndSort(
         "requestors",
         "plays",
-        "desc",
-        10
+        "desc"
       );
     response.json(message(path, 200, requestors));
   } catch (error) {
