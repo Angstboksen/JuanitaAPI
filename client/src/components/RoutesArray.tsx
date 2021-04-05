@@ -813,6 +813,7 @@ const routesArray: Route[] = [
           data={{
             tag: "string",
             id: "string",
+            plays: "number",
           }}
         ></JSONPretty>
         <h4>
