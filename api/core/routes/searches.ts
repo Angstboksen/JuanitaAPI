@@ -70,8 +70,16 @@ router.route("/:userid").get(async (request: Request, response: Response) => {
 
 export const pruneSearches = async (searches: any): Promise<SearchObject[]> => {
   for (const search of searches) {
-    search.date = new Date(search.date).toLocaleString("de-DE", {
+    search.date = new Date(search.date).toLocaleString("no-NO", {
       timeZone: "Europe/Oslo",
+      hour12: false,
+      formatMatcher: "basic",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
     });
     delete search["song"];
   }

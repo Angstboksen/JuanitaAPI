@@ -13,7 +13,17 @@ router.route("/").get(async (request: Request, response: Response) => {
     const obj = {
       name: "JuanitaAPI",
       type: "REST",
-      date: new Date().toString(),
+      date: new Date().toLocaleString("no-NO", {
+        timeZone: "Europe/Oslo",
+        hour12: false,
+        formatMatcher: "basic",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      }),
       author: "Hauk Aleksander Olaussen",
       github_repository: "https://github.com/Angstboksen/JuanitaAPI",
       discord_bot: "https://github.com/Angstboksen/JuanitaMusic",
