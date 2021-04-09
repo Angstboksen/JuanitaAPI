@@ -14,6 +14,7 @@ export enum RouteEnum {
   SONGS_SOTW = "songs_sotw",
   SONGS_SOTM = "songs_sotm",
   SONGS_RANDOM = "songs_random",
+  SONGS_TOP = "songs_top",
   SEARCHES_BASE = "searches_base",
   SEARCHES_USER = "searches_user",
   REQUESTORS_BASE = "requestors_base",
@@ -79,6 +80,9 @@ const routesArray: Route[] = [
                   </li>
                   <li>
                     <code>/random</code> Random song from all played songs
+                  </li>
+                  <li>
+                    <code>/top</code> Top songs played
                   </li>
                 </ul>
               </li>
@@ -659,6 +663,57 @@ const routesArray: Route[] = [
       </div>
     ),
     isArray: false,
+  },
+  {
+    name: RouteEnum.SONGS_TOP,
+    base: "/songs/top",
+    description: (
+      <div>
+        <h3>
+          <span className="orange-text">Songs:</span> Top songs
+        </h3>
+        <h4>
+          Endpoint format: <code>{`${baseURL}/songs/top`}</code>
+        </h4>
+        <p>
+          <span className="bold">
+            This is the endpoint you want to use if you want to retrieve a list
+            of the most played songs on Juanita.
+          </span>{" "}
+          Juanita has played hundreds of different songs since she started
+          jamming. This endpoint will return an ordered list of the most played
+          songs.
+        </p>
+        <h4>Data format</h4>
+        <p>
+          Below you can see the format of the data returned by this endpoint.
+          The name of the attibute will be colored in{" "}
+          <span className="purple-text">purple</span>, and the type in{" "}
+          <span className="orange-text">orange</span>.
+        </p>
+        <JSONPretty
+          className="pretty-json"
+          data={{
+            title: "string",
+            date: "date",
+            plays: "number",
+          }}
+        ></JSONPretty>
+        <h4>
+          Return type: <code>Array / Set</code>
+        </h4>
+        <h3>Possible HTTP responses</h3>
+        <h4>
+          <code className="get green">200 OK</code>
+        </h4>
+        <p>Indicating that everything went well, and the data was retrieved.</p>
+        <h4>
+          <code className="get red">500 Internal Sever Error</code>
+        </h4>
+        <p>Indicating that something is wrong on the server side.</p>
+      </div>
+    ),
+    isArray: true,
   },
   {
     name: RouteEnum.SEARCHES_BASE,

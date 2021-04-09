@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { SearchObject } from "../../types";
 import firestoreConnection from "../firebase/connection";
 import {
   _fetchDBCollection,
@@ -6,6 +7,8 @@ import {
 } from "../firebase/logic";
 import { validateLimit } from "../utils/helpers";
 import { message } from "../utils/responses";
+import { findTopSongs } from "./requestors";
+import { pruneSearches } from "./searches";
 const router = express.Router();
 
 router.route("/").get(async (request: Request, response: Response) => {
@@ -66,14 +69,6 @@ router.route("/random").get(async (request: Request, response: Response) => {
   try {
     const songs = await _fetchDBCollection("songs");
 
-    // firestoreConnection
-    //   .collection("songs")
-    //   .get()
-    //   .then((snap) => {
-    //     const size = snap.size; // will return the collection size
-    //     console.log(size);
-    //   });
-
     const song = songs[Math.floor(Math.random() * songs.length)];
     response.json(message(path, 200, song));
   } catch (error) {
@@ -81,4 +76,41 @@ router.route("/random").get(async (request: Request, response: Response) => {
     response.json(message(path, 500));
   }
 });
+
+router.route("/top").get(async (request: Request, response: Response) => {
+  const limit = request.query.limit;
+  const path = "/songs/top";
+  console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
+  try {
+    const songs = await _fetchDBCollection("searches");
+    let top;
+    if (validateLimit(limit))
+      top = await pruneTopSongs(findTopSongs(songs).slice(0, +limit!));
+    else top = await pruneTopSongs(findTopSongs(songs));
+    response.json(message(path, 200, top));
+  } catch (error) {
+    console.error(`[Juanita]: An error occured at '${path}': ${error}`);
+    response.json(message(path, 500));
+  }
+});
+
+export const pruneTopSongs = async (searches: any): Promise<SearchObject[]> => {
+  for (const search of searches) {
+    search.date = new Date(search.date).toLocaleString("no-NO", {
+      timeZone: "Europe/Oslo",
+      hour12: false,
+      formatMatcher: "basic",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+    delete search["song"];
+    delete search["requestor"];
+  }
+  return searches;
+};
+
 export default router;

@@ -220,6 +220,7 @@ const DrawerContainer: React.FC<Props> = ({
               { route: "/songs/sotw", enum: RouteEnum.SONGS_SOTW },
               { route: "/songs/sotm", enum: RouteEnum.SONGS_SOTM },
               { route: "/songs/random", enum: RouteEnum.SONGS_RANDOM },
+              { route: "/songs/top", enum: RouteEnum.SONGS_TOP },
             ].map((route: MiniRoute, index: number) => (
               <ListItem
                 button
