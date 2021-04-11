@@ -243,7 +243,7 @@ const routesArray: Route[] = [
             fetched from that endpoint.
           </p>
           <h4>
-            <code className="get red">500 Internal Sever Error</code>
+            <code className="get darkred">500 Internal Sever Error</code>
           </h4>
           <p>Indicating that something is wrong on the server side.</p>
         </div>
