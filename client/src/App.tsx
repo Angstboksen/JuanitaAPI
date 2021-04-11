@@ -37,7 +37,7 @@ const App: React.FC = () => {
         color = "red";
         break;
       case 500:
-        color = "red";
+        color = "darkred";
         break;
       default:
         color = "green";
