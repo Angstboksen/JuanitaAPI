@@ -4,6 +4,10 @@ import {
   _fetchDBCollection,
   _fetchDBCollectionWithDoc,
 } from "../firebase/logic";
+import {
+  _fetchMongoCollection,
+  _fetchMongoSearchesOfRequestor,
+} from "../mongodb/logic";
 import { message } from "../utils/responses";
 const router = express.Router();
 
@@ -36,6 +40,19 @@ router.route("/playtime").get(async (request: Request, response: Response) => {
       readable: secondsToTimestamp(playtime!.seconds),
     };
     response.json(message(path, 200, converted));
+  } catch (error) {
+    console.error(`[Juanita]: An error occured at '${path}': ${error}`);
+    response.json(message(path, 500));
+  }
+});
+
+router.route("/test").get(async (request: Request, response: Response) => {
+  const path = `/stats/test`;
+  console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
+  try {
+    const data = await _fetchMongoSearchesOfRequestor("192586347972788224", 10);
+    if (data.length > 0) response.json(message(path, 200, data));
+    else response.json(message(path, 204));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
     response.json(message(path, 500));

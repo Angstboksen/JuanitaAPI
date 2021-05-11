@@ -5,6 +5,10 @@ import {
   _fetchDBCollection,
   _fetchDBCollectionWithDoc,
 } from "../firebase/logic";
+import {
+  _fetchMongoCollection,
+  _fetchMongoRandomDocument,
+} from "../mongodb/logic";
 import { validateLimit } from "../utils/helpers";
 import { message } from "../utils/responses";
 import { findTopSongs } from "./requestors";
@@ -18,8 +22,8 @@ router.route("/").get(async (request: Request, response: Response) => {
   let songs;
   try {
     if (validateLimit(limit))
-      songs = await _fetchDBCollection("songs", +limit!);
-    else songs = await _fetchDBCollection("songs");
+      songs = await _fetchMongoCollection("songs", +limit!);
+    else songs = await _fetchMongoCollection("songs");
     response.json(message(path, 200, songs));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
@@ -67,9 +71,8 @@ router.route("/random").get(async (request: Request, response: Response) => {
   const path = "/songs/random";
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   try {
-    const songs = await _fetchDBCollection("songs");
+    const song = await _fetchMongoRandomDocument("songs");
 
-    const song = songs[Math.floor(Math.random() * songs.length)];
     response.json(message(path, 200, song));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
@@ -82,7 +85,7 @@ router.route("/top").get(async (request: Request, response: Response) => {
   const path = "/songs/top";
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   try {
-    const songs = await _fetchDBCollection("searches");
+    const songs = await _fetchMongoCollection("searches");
     let top;
     if (validateLimit(limit))
       top = await pruneTopSongs(findTopSongs(songs).slice(0, +limit!));
@@ -107,7 +110,6 @@ export const pruneTopSongs = async (searches: any): Promise<SearchObject[]> => {
       minute: "numeric",
       second: "numeric",
     });
-    delete search["song"];
     delete search["requestor"];
   }
   return searches;

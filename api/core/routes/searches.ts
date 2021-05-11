@@ -9,6 +9,10 @@ import {
   _inceptionCollection,
   _inceptionCollectionAndSort,
 } from "../firebase/logic";
+import {
+  _fetchMongoCollectionAndSortDate,
+  _fetchMongoSearchesOfRequestor,
+} from "../mongodb/logic";
 import { validateLimit } from "../utils/helpers";
 import { message } from "../utils/responses";
 
@@ -21,15 +25,16 @@ router.route("/").get(async (request: Request, response: Response) => {
   let searches;
   try {
     if (validateLimit(limit))
-      searches = await pruneSearches(
-        await _fetchDBCollectionAndSort("searches", "date", "desc", +limit!)
+      searches = pruneSearches(
+        await _fetchMongoCollectionAndSortDate("searches", +limit!)
       );
     else
-      searches = await pruneSearches(
-        await _fetchDBCollectionAndSort("searches", "date", "desc")
+      searches = pruneSearches(
+        await _fetchMongoCollectionAndSortDate("searches")
       );
-    if (searches === null) return response.json(message(path, 204));
-    response.json(message(path, 200, searches));
+
+    if (searches.length > 0) response.json(message(path, 200, searches));
+    else response.json(message(path, 204));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
     response.json(message(path, 500));
@@ -44,31 +49,18 @@ router.route("/:userid").get(async (request: Request, response: Response) => {
   let searches;
   try {
     if (validateLimit(limit))
-      searches = await _inceptionCollectionAndSort(
-        "requestors",
-        userid,
-        "searches",
-        "date",
-        "desc",
-        +limit!
-      );
-    else
-      searches = searches = await _inceptionCollectionAndSort(
-        "requestors",
-        userid,
-        "searches",
-        "date",
-        "desc"
-      );
-    if (searches.length === 0) return response.json(message(path, 204));
-    response.json(message(path, 200, await pruneSearches(searches)));
+      searches = await _fetchMongoSearchesOfRequestor(userid, +limit!);
+    else searches = searches = await _fetchMongoSearchesOfRequestor(userid);
+    if (searches.length > 0)
+      response.json(message(path, 200, pruneSearches(searches)));
+    else response.json(message(path, 204));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
     response.json(message(path, 500));
   }
 });
 
-export const pruneSearches = async (searches: any): Promise<SearchObject[]> => {
+export const pruneSearches = (searches: SearchObject[]): SearchObject[] => {
   for (const search of searches) {
     search.date = new Date(search.date).toLocaleString("no-NO", {
       timeZone: "Europe/Oslo",
@@ -81,7 +73,6 @@ export const pruneSearches = async (searches: any): Promise<SearchObject[]> => {
       minute: "numeric",
       second: "numeric",
     });
-    delete search["song"];
   }
   return searches;
 };

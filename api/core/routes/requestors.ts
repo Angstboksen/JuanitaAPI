@@ -7,6 +7,10 @@ import {
   _inceptionCollection,
   _inceptionCollectionAndSort,
 } from "../firebase/logic";
+import {
+  _fetchMongoCollection,
+  _fetchMongoSearchesOfRequestor,
+} from "../mongodb/logic";
 import { validateLimit } from "../utils/helpers";
 import { message } from "../utils/responses";
 import { pruneSearches } from "./searches";
@@ -19,8 +23,8 @@ router.route("/").get(async (request: Request, response: Response) => {
   let requestors;
   try {
     if (validateLimit(limit))
-      requestors = await _fetchDBCollection("requestors", +limit!);
-    else requestors = await _fetchDBCollection("requestors");
+      requestors = await _fetchMongoCollection("requestors", +limit!);
+    else requestors = await _fetchMongoCollection("requestors");
     response.json(message(path, 200, requestors));
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
@@ -34,15 +38,11 @@ router
     const userid: string = request.params.userid;
     const path = `/requestors/${userid}/topsong`;
     try {
-      const searches = await _inceptionCollection(
-        "requestors",
-        userid,
-        "searches"
-      );
+      const searches = await _fetchMongoSearchesOfRequestor(userid);
       if (searches.length === 0) return response.json(message(path, 204));
 
-      const sorted = findTopSongs(await pruneSearches(searches));
-      response.json(message(path, 200, sorted[0]));
+      const sorted = findTopSongs(searches);
+      response.json(message(path, 200, pruneSearches([sorted[0]])[0]));
     } catch (error) {
       console.error(`[Juanita]: An error occured at '${path}': ${error}`);
       response.json(message(path, 500));
@@ -57,16 +57,12 @@ router
     const path = `/requestors/${userid}/topsongs`;
     console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
     try {
-      const searches = await _inceptionCollection(
-        "requestors",
-        userid,
-        "searches"
-      );
+      const searches = await _fetchMongoSearchesOfRequestor(userid);
       if (searches.length === 0) return response.json(message(path, 204));
       let sorted;
       if (validateLimit(limit) && +limit! > 0 && +limit! < 10)
-        sorted = findTopSongs(await pruneSearches(searches)).slice(0, +limit!);
-      else sorted = findTopSongs(await pruneSearches(searches)).slice(0, 10);
+        sorted = findTopSongs(pruneSearches(searches)).slice(0, +limit!);
+      else sorted = findTopSongs(pruneSearches(searches)).slice(0, 10);
 
       response.json(message(path, 200, sorted));
     } catch (error) {
@@ -80,39 +76,30 @@ router.route("/top").get(async (request: Request, response: Response) => {
   const path = `/requestors/top`;
   console.log(`[Juanita]: Reached '${path}' endpoint from ${request.ip}`);
   try {
-    let requestors;
-    if (validateLimit(limit) && +limit! > 0 && +limit! < 10)
-      requestors = await _fetchDBCollectionAndSort(
-        "requestors",
-        "plays",
-        "desc",
-        +limit!
-      );
-    else
-      requestors = await _fetchDBCollectionAndSort(
-        "requestors",
-        "plays",
-        "desc"
-      );
-    response.json(message(path, 200, requestors));
+    let requestors = await _fetchMongoCollection("requestors");
+    const searches = await _fetchMongoCollection("searches");
+    for (const requestor of requestors) {
+      requestor.plays = searches.filter(
+        (search: SearchObject) => requestor.id === search.requestor.id
+      ).length;
+    }
+    requestors.sort((a, b) => b.plays - a.plays);
+    if (validateLimit(limit)) {
+      requestors = requestors.slice(0, +limit!);
+    }
+
+    response.json(
+      message(
+        path,
+        200,
+        requestors.sort((a, b) => b.plays - a.plays)
+      )
+    );
   } catch (error) {
     console.error(`[Juanita]: An error occured at '${path}': ${error}`);
     response.json(message(path, 500));
   }
 });
-
-export const findRequestorPlays = async (searches: SearchObject[]) => {
-  const requestors: SearchRequestor[] = await _fetchDBCollection("requestors");
-  for (const requestor of requestors) {
-    const amount = searches.filter(
-      (search: SearchObject) => requestor.id === search.requestor.id
-    ).length;
-    requestor.plays = amount;
-  }
-  return requestors.sort(
-    (a: SearchRequestor, b: SearchRequestor) => b.plays! - a.plays!
-  );
-};
 
 export const findTopSongs = (searches: SearchObject[]) => {
   const container: string[] = [];
