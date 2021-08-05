@@ -333,10 +333,20 @@ const routesArray: Route[] = [
         <JSONPretty
           className="pretty-json"
           data={{
-            playtime: {
+            unique_songs: "number",
+            total_plays: "number",
+            unique_requestors: "number",
+            top_requestor: {
+              tag: "string",
+              plays: "number",
+            },
+            time_played: {
               seconds: "number",
               readable: "string",
             },
+            sotd: "string",
+            sotw: "string",
+            sotm: "string",
           }}
         ></JSONPretty>
         <h4>
