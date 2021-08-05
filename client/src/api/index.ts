@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export const baseURL = "http://localhost:8000";
+export const baseURL = "https://juanitaapi.herokuapp.com";
 
 export enum HTTPMethods {
   GET = "GET",
