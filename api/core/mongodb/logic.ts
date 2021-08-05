@@ -16,6 +16,11 @@ export const _fetchMongoCollection = async (
   return await db.collection(collectionName).find().limit(limit).toArray();
 };
 
+export const _fetchMongoCollectionLength = async (collectionName: string) => {
+  const collection = await _fetchMongoCollection(collectionName);
+  return collection.length;
+};
+
 export const _fetchMongoRandomDocument = async (collectionName: string) => {
   const db = client.db("juanitamusic");
   const data = await db
