@@ -2,8 +2,9 @@ package responses
 
 import "github.com/gofiber/fiber/v2"
 
-type SearchResponse struct {
+type MainResponse struct {
 	Status  int        `json:"status"`
 	Message string     `json:"message"`
-	Data    *fiber.Map `json:"data"`
+	Size    int        `json:"size"`
+	Body    *fiber.Map `json:"body"`
 }
