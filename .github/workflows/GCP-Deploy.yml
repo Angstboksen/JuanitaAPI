@@ -34,7 +34,7 @@ jobs:
           run: docker run $IMAGE_NAME:${{github.sha}} sh -c "go test -v" -env MONGOURI=${{ secrets.MONGOURI }}
 
         - name: Tag Docker image
-          run: docker tag juanitaapi $IMAGE_NAME:latest
+          run: docker tag juanitaapi $IMAGE_NAME:${{github.sha}}
 
         - name: Push Docker image
           run: docker push --all-tags $IMAGE_NAME
