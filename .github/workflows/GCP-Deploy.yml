@@ -15,11 +15,7 @@ jobs:
         steps:
 
         - name: Login
-          uses: google-github-actions/setup-gcloud@v0
-          with:
-            project_id: ${{ secrets.GCP_PROJECT_ID }}
-            service_account_email: ${{ secrets.GCP_EMAIL }}
-            service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+          -run : gcloud auth activate-service-account --key-file=${{ secrets.GCP_CREDENTIALS }}
 
         - name: Configure Docker
           run: gcloud auth configure-docker --quiet
@@ -28,7 +24,7 @@ jobs:
           uses: actions/checkout@v2
 
         - name: Build Docker image
-          run: docker build . -t $IMAGE_NAME
+          run: docker build . -t $IMAGE_NAME --build-arg MONGOURI=${{ secrets.MONGOURI }}
 
         - name: Test Docker image
           run: docker run $IMAGE_NAME sh -c "go test -v"
