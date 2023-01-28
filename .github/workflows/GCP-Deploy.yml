@@ -28,19 +28,13 @@ jobs:
           uses: actions/checkout@v2
 
         - name: Build Docker image
-          run: 
-            - docker save --output tmp-image.docker juanitaapi
-            - docker build -f Dockerfile -t juanitaapi .
-          artifacts:
-            - tmp-image.docker
+          run: docker build . -t $IMAGE_NAME --build-arg MONGOURI=${{ secrets.MONGOURI }}
 
         - name: Test Docker image
-          run: docker run $IMAGE_NAME:${{github.sha}} sh -c "go test -v" -env MONGOURI=${{ secrets.MONGOURI }}
+          run: docker run $IMAGE_NAME sh -c "go test -v" -env MONGOURI=${{ secrets.MONGOURI }}
 
         - name: Tag Docker image
-          run: 
-            - docker tag juanitaapi $IMAGE_NAME:latest
-            - docker tag juanitaapi $IMAGE_NAME:${{github.sha}}
+          run: docker tag juanita $IMAGE_NAME:latest
 
         - name: Push Docker image
           run: docker push --all-tags $IMAGE_NAME
