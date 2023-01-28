@@ -11,7 +11,7 @@ jobs:
         name: Setup Gcloud Account
         runs-on: ubuntu-latest
         env:
-          IMAGE_NAME: europe-west3-docker.pkg.dev/angstboksen-development/cloud-run-source-deploy/juanitaapi
+          IMAGE_NAME: europe-west3-docker.pkg.dev/angstboksen-development/cloud-run-source-deploy/juanitaapi:latest
         steps:
 
         - name: Login
