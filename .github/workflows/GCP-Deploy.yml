@@ -34,10 +34,10 @@ jobs:
           run: docker run $IMAGE_NAME:${{github.sha}} sh -c "go test -v" -env MONGOURI=${{ secrets.MONGOURI }}
 
         - name: Tag Docker image
-          run: docker tag $IMAGE_NAME:${{github.sha}} $IMAGE_NAME:latest
+          run: docker tag juanitaapi $IMAGE_NAME:latest
 
         - name: Push Docker image
-          run: docker push $IMAGE_NAME:latest
+          run: docker push --all-tags $IMAGE_NAME
 
         - name: Deploy Docker image
           run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} --image $IMAGE_NAME --region europe-west3 --platform managed
