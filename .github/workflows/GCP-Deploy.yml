@@ -31,7 +31,7 @@ jobs:
           run: docker build . -t $IMAGE_NAME --build-arg MONGOURI=${{ secrets.MONGOURI }}
 
         - name: Test Docker image
-          run: docker run $IMAGE_NAME sh -c "go test -v"
+          run: docker run $IMAGE_NAME sh -c "go test -v" -env MONGOURI=${{ secrets.MONGOURI }}
 
         - name: Push Docker image
           run: docker push $IMAGE_NAME
