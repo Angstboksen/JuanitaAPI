@@ -9,5 +9,5 @@ services:
         environment:
             - MONGOURI=$MONGOURI
         ports:
-            - "6000:8080"
+            - "6000:6000"
 

@@ -15,6 +15,7 @@ func main() {
 	routes.AliasRoute(app)
 	routes.GuildRoute(app)
 	routes.RequestorRoute(app)
+	routes.GetStats(app)
 
-	app.Listen(":8080")
+	app.Listen(":6000")
 }
