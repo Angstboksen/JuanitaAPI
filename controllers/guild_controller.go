@@ -46,6 +46,63 @@ func CreateGuild(c *fiber.Ctx) error {
 	return c.Status(http.StatusCreated).JSON(responses.MainResponse{Status: http.StatusCreated, Message: "success", Body: &fiber.Map{"data": result}})
 }
 
+func UpdateGuild(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	var guild models.Guild
+	defer cancel()
+
+	//validate the request body
+	if err := c.BodyParser(&guild); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "error", Body: &fiber.Map{"data": err.Error()}})
+	}
+
+	// use the validator library to validate required fields
+	if validationErr := validate.Struct(&guild); validationErr != nil {
+		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "error", Body: &fiber.Map{"data": validationErr.Error()}})
+	}
+
+	newGuild := models.Guild{
+		Id:             guild.Id,
+		Name:           guild.Name,
+		Language:       guild.Language,
+		PermissionRole: guild.PermissionRole,
+		Aliases:        guild.Aliases,
+	}
+
+	guildCollection.UpdateOne(ctx, bson.M{"id": guild.Id}, bson.M{"$set": newGuild})
+
+	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Body: &fiber.Map{"data": newGuild}})
+}
+
+func UpdateGuildLanguage(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	guildId := c.Params("guildId")
+	var language models.GuildLanguagePatch
+	defer cancel()
+
+	//validate the request body
+	if err := c.BodyParser(&language); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "error", Body: &fiber.Map{"data": err.Error()}})
+	}
+
+	// use the validator library to validate required fields
+	if validationErr := validate.Struct(&language); validationErr != nil {
+		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "error", Body: &fiber.Map{"data": validationErr.Error()}})
+	}
+
+	result := guildCollection.FindOne(ctx, bson.M{"id": guildId})
+	if result.Err() != nil {
+		return c.Status(http.StatusNotFound).JSON(responses.MainResponse{Status: http.StatusNotFound, Message: "error", Body: &fiber.Map{"data": "No guild with that id found"}})
+	}
+
+	_, err := guildCollection.UpdateOne(ctx, bson.M{"id": guildId}, bson.M{"$set": bson.M{"language": language.Language}})
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": result.Err().Error()}})
+	}
+
+	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Size: 1, Body: &fiber.Map{"data": language}})
+}
+
 func GetGuilds(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var guilds []models.Guild

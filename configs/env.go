@@ -7,11 +7,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func EnvMongoURI() string {
+func MongoUriEnv() string {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Default().Println("Error loading .env file, using default MONGOURI")
 	}
-
 	return os.Getenv("MONGOURI")
 }

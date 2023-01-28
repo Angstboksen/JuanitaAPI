@@ -63,9 +63,9 @@ func GetAliases(c *fiber.Ctx) error {
 	guildId := c.Params("guildId")
 	defer cancel()
 
-	result, err := guildCollection.Find(ctx, bson.M{"id": guildId})
-	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
+	result := guildCollection.FindOne(ctx, bson.M{"id": guildId})
+	if result.Err() != nil {
+		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "Guild does not exist", Body: &fiber.Map{"data": result.Err().Error()}})
 	}
 
 	var guild models.Guild

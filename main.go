@@ -9,9 +9,12 @@ import (
 
 func main() {
 	app := fiber.New()
-
 	configs.ConnectDB()
-	routes.SearchRoute(app)
 
-	app.Listen(":6000")
+	routes.SearchRoute(app)
+	routes.AliasRoute(app)
+	routes.GuildRoute(app)
+	routes.RequestorRoute(app)
+
+	app.Listen(":8080")
 }
