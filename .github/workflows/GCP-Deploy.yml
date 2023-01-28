@@ -15,7 +15,7 @@ jobs:
         steps:
 
         - name: Login
-          -run : gcloud auth activate-service-account --key-file=${{ secrets.GCP_CREDENTIALS }}
+          run : gcloud auth activate-service-account --key-file=${{ secrets.GCP_CREDENTIALS }}
 
         - name: Configure Docker
           run: gcloud auth configure-docker --quiet
