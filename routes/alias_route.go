@@ -10,5 +10,5 @@ func AliasRoute(app *fiber.App) {
 	//All routes related to aliases comes here
 	app.Post("/alias/:guildId", controllers.CreateAlias)
 	app.Get("/aliases/:guildId", controllers.GetAliases)
-
+	app.Get("/alias/:guildId/:alias", controllers.GetByAlias)
 }

@@ -3,6 +3,8 @@ package utils
 import (
 	"juanitaapi/models"
 	"sort"
+
+	"github.com/tsirysndr/go-spotify"
 )
 
 func CountAndCompile(collection []models.SongCount) []models.SongCount {
@@ -38,4 +40,14 @@ func GetStatsTuple(searches []models.Search) (int, models.SongCount) {
 	}
 
 	return len(songCounts), topSearch
+}
+
+func GetArtistAsList(artists []spotify.Artist) []string {
+	var artistList []string
+
+	for _, artist := range artists {
+		artistList = append(artistList, artist.Name)
+	}
+
+	return artistList
 }

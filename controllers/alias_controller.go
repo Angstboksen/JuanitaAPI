@@ -6,6 +6,7 @@ import (
 	"juanitaapi/models"
 	"juanitaapi/responses"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,7 +16,7 @@ import (
 func CreateAlias(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	guildId := c.Params("guildId")
-	var alias models.Alias
+	var alias models.AliasPost
 	defer cancel()
 
 	if err := c.BodyParser(&alias); err != nil {
@@ -35,24 +36,24 @@ func CreateAlias(c *fiber.Ctx) error {
 	if existsAlias.Err() == nil {
 		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "Alias already exists in guild", Body: &fiber.Map{"data": alias.Alias}})
 	}
-
-	existsPlaylist := guildCollection.FindOne(ctx, bson.M{"id": guildId, "alias.playlistid": alias.PlaylistId})
+	playlistId := strings.Split(alias.PlaylistId, ":")[2]
+	existsPlaylist := guildCollection.FindOne(ctx, bson.M{"id": guildId, "alias.playlistid": playlistId})
 	if existsPlaylist.Err() == nil {
 		var playlistAlias models.Alias
 		existsPlaylist.Decode(&playlistAlias)
 		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "PlaylistID already has an alias in guild", Body: &fiber.Map{"data": playlistAlias.Alias}})
 	}
 
-	_, wrong := integration.GetPlaylist("0hF5RrXuFzndIqFmuzpnTV")
+	playlist, wrong := integration.GetPlaylist(playlistId)
 
 	if wrong {
-		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "Playlist does not exist", Body: &fiber.Map{"data": alias.PlaylistId}})
+		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "Playlist does not exist", Body: &fiber.Map{"data": playlistId}})
 	}
 
 	newAlias := models.Alias{
-		Name:       alias.Name,
+		Name:       playlist.Name,
 		Alias:      alias.Alias,
-		PlaylistId: alias.PlaylistId,
+		PlaylistId: playlistId,
 	}
 
 	_, err := guildCollection.UpdateOne(ctx, bson.M{"id": guildId}, bson.M{"$push": bson.M{"aliases": newAlias}})
@@ -78,4 +79,28 @@ func GetAliases(c *fiber.Ctx) error {
 	result.Decode(&guild)
 
 	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Body: &fiber.Map{"data": guild.Aliases}})
+}
+
+func GetByAlias(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	guildId := c.Params("guildId")
+	aliasString := c.Params("alias")
+	defer cancel()
+	var guild models.Guild
+
+	var result = guildCollection.FindOne(ctx, bson.M{"id": guildId, "aliases.alias": aliasString})
+	if result.Err() != nil {
+		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "Alias does not exist", Body: &fiber.Map{"data": result.Err().Error()}})
+	}
+
+	result.Decode(&guild)
+
+	var alias models.Alias
+	for _, a := range guild.Aliases {
+		if a.Alias == aliasString {
+			alias = a
+		}
+	}
+
+	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Size: 1, Body: &fiber.Map{"data": alias}})
 }
