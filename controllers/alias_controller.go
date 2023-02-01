@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"juanitaapi/integration"
 	"juanitaapi/models"
 	"juanitaapi/responses"
 	"net/http"
@@ -42,7 +43,11 @@ func CreateAlias(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "PlaylistID already has an alias in guild", Body: &fiber.Map{"data": playlistAlias.Alias}})
 	}
 
-	// ADD SPOTIFY VALIDATION
+	_, wrong := integration.GetPlaylist("0hF5RrXuFzndIqFmuzpnTV")
+
+	if wrong {
+		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "Playlist does not exist", Body: &fiber.Map{"data": alias.PlaylistId}})
+	}
 
 	newAlias := models.Alias{
 		Name:       alias.Name,
@@ -51,6 +56,7 @@ func CreateAlias(c *fiber.Ctx) error {
 	}
 
 	_, err := guildCollection.UpdateOne(ctx, bson.M{"id": guildId}, bson.M{"$push": bson.M{"aliases": newAlias}})
+
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
 	}

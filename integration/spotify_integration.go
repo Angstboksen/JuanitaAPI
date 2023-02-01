@@ -8,11 +8,19 @@ import (
 	"juanitaapi/models"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/tsirysndr/go-spotify"
 )
 
-var spotifyClient = spotify.NewClient(FetchNewToken())
+var spotifyClient = spotify.NewClient("invalidtoken")
+
+func FetchNewTokenEvery50Minutes() {
+	for {
+		time.Sleep(50 * time.Minute)
+		spotifyClient = spotify.NewClient(FetchNewToken())
+	}
+}
 
 func FetchNewToken() string {
 	credentials := configs.SpotifyCredentialsEnv()
@@ -43,4 +51,14 @@ func FetchNewToken() string {
 	}
 
 	return ""
+}
+
+func GetPlaylist(playlistId string) (*spotify.Playlist, bool) {
+	spotifyClient = spotify.NewClient(FetchNewToken())
+	result, err := spotifyClient.Playlist.Get(playlistId)
+	if err != nil || result.Name == "" {
+		return nil, true
+	}
+
+	return result, false
 }

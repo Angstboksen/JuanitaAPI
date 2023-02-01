@@ -22,3 +22,20 @@ func CountAndCompile(collection []models.SongCount) []models.SongCount {
 
 	return collection
 }
+
+func GetStatsTuple(searches []models.Search) (int, models.SongCount) {
+	var songCounts []models.SongCount
+	var topSearch models.SongCount
+
+	for _, search := range searches {
+		songCounts = append(songCounts, models.SongCount{Title: search.Title, PlayCount: 1})
+	}
+
+	songCounts = CountAndCompile(songCounts)
+
+	if len(songCounts) > 0 {
+		topSearch = songCounts[0]
+	}
+
+	return len(songCounts), topSearch
+}
