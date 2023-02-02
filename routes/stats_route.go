@@ -7,5 +7,5 @@ import (
 )
 
 func GetStats(app *fiber.App) {
-	app.Get("/stats", controllers.GetStats)
+	app.Get("/stats/:requestorId", controllers.GetRequestorStats)
 }
