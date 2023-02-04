@@ -1,0 +1,561 @@
+definitions:
+  models.Alias:
+    properties:
+      alias:
+        type: string
+      name:
+        type: string
+      playlistid:
+        type: string
+    required:
+    - alias
+    - name
+    - playlistid
+    type: object
+  models.AliasPost:
+    properties:
+      alias:
+        type: string
+      playlistid:
+        type: string
+    required:
+    - alias
+    - playlistid
+    type: object
+  models.Guild:
+    properties:
+      aliases:
+        items:
+          $ref: '#/definitions/models.Alias'
+        type: array
+      id:
+        type: string
+      language:
+        $ref: '#/definitions/models.Language'
+      name:
+        type: string
+      permissionrole:
+        type: string
+    required:
+    - aliases
+    - id
+    - language
+    - name
+    - permissionrole
+    type: object
+  models.GuildLanguagePatch:
+    properties:
+      language:
+        $ref: '#/definitions/models.Language'
+    required:
+    - language
+    type: object
+  models.Language:
+    enum:
+    - unknown
+    type: string
+    x-enum-varnames:
+    - Unknown
+  models.Requestor:
+    properties:
+      id:
+        type: string
+      tag:
+        type: string
+    required:
+    - tag
+    type: object
+  models.RequestorStats:
+    properties:
+      distinct_song_count:
+        type: integer
+      requestor:
+        $ref: '#/definitions/models.Requestor'
+      search_count:
+        type: integer
+      time_played:
+        type: integer
+      top_search:
+        $ref: '#/definitions/models.SongCount'
+    required:
+    - distinct_song_count
+    - requestor
+    - search_count
+    - time_played
+    - top_search
+    type: object
+  models.Search:
+    type: object
+  models.SongCount:
+    properties:
+      duration:
+        type: integer
+      play_count:
+        type: integer
+      requestor:
+        $ref: '#/definitions/models.Requestor'
+      title:
+        type: string
+      url:
+        type: string
+    required:
+    - duration
+    - play_count
+    - requestor
+    - title
+    - url
+    type: object
+info:
+  contact: {}
+  description: Backend service for JuanitaMusic discord bot
+  license:
+    name: MIT
+  title: JuanitaAPI
+  version: "1.0"
+paths:
+  /alias/{guildId}:
+    post:
+      operationId: CreateAlias
+      parameters:
+      - description: Discord ID of the guild
+        in: path
+        name: guildId
+        required: true
+        type: string
+      - description: Alias to create
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.AliasPost'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Alias'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      summary: Create a new alias for a playlist URI
+      tags:
+      - Alias
+  /alias/{guildId}/{alias}:
+    get:
+      operationId: GetByAlias
+      parameters:
+      - description: Discord ID of the guild
+        in: path
+        name: guildId
+        required: true
+        type: string
+      - description: Alias to get
+        in: path
+        name: alias
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Alias'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Get an alias object by alias string if exists
+      tags:
+      - Alias
+  /aliases/{guildId}:
+    get:
+      operationId: GetAliases
+      parameters:
+      - description: Discord ID of the guild
+        in: path
+        name: guildId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Alias'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Get all aliases for a guild
+      tags:
+      - Alias
+  /guild:
+    post:
+      operationId: CreateGuild
+      parameters:
+      - description: Guild to create
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Guild'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Guild'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      summary: Create a new guild
+      tags:
+      - Guild
+  /guild/{guildId}:
+    put:
+      operationId: UpdateGuild
+      parameters:
+      - description: Guild to update
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Guild'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Guild'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Update a guild
+      tags:
+      - Guild
+  /guild/{guildId}/language:
+    patch:
+      operationId: UpdateGuildLanguage
+      parameters:
+      - description: Guild language to update
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.GuildLanguagePatch'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GuildLanguagePatch'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Update a guild language
+      tags:
+      - Guild
+  /guilds:
+    get:
+      operationId: GetGuilds
+      parameters:
+      - description: Limit the amount of guilds returned
+        in: query
+        name: limit
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Guild'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Get all guilds
+      tags:
+      - Guild
+  /requestor:
+    post:
+      operationId: CreateRequestor
+      parameters:
+      - description: Requestor to create
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Requestor'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Requestor'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      summary: Create a new requestor
+      tags:
+      - Requestor
+  /requestors:
+    get:
+      operationId: GetRequestors
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Requestor'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Get all requestors
+      tags:
+      - Requestor
+  /search:
+    get:
+      operationId: GetSearches
+      parameters:
+      - description: Limit of results
+        in: query
+        name: limit
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Search'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Get all searches
+      tags:
+      - Search
+    post:
+      operationId: CreateSearch
+      parameters:
+      - description: Search to create
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Search'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Search'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Create a new search
+      tags:
+      - Search
+  /search/guild/{guildId}:
+    get:
+      operationId: GetSearchesByGuild
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guildId
+        required: true
+        type: string
+      - description: Limit of results
+        in: query
+        name: limit
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Search'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Get all searches by guild
+      tags:
+      - Search
+  /search/mostplayed:
+    get:
+      operationId: GetMostPlayedSearches
+      parameters:
+      - description: Limit of results
+        in: query
+        name: limit
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SongCount'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Get most played searches
+      tags:
+      - Search
+  /search/mostplayed/guild/{guildId}:
+    get:
+      operationId: GetMostPlayedSearchesByGuild
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guildId
+        required: true
+        type: string
+      - description: Limit of results
+        in: query
+        name: limit
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SongCount'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Get most played searches by guild
+      tags:
+      - Search
+  /search/mostplayed/requestor/{requestorId}:
+    get:
+      operationId: GetMostPlayedSearchesByRequestor
+      parameters:
+      - description: Requestor ID
+        in: path
+        name: requestorId
+        required: true
+        type: string
+      - description: Limit of results
+        in: query
+        name: limit
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SongCount'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Get most played searches by requestor
+      tags:
+      - Search
+  /search/requestor/{requestorId}:
+    get:
+      operationId: GetSearchesByRequestor
+      parameters:
+      - description: Requestor ID
+        in: path
+        name: requestorId
+        required: true
+        type: string
+      - description: Limit of results
+        in: query
+        name: limit
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Search'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Get all searches by requestor
+      tags:
+      - Search
+  /search/requestor/{requestorId}/guild/{guildId}:
+    get:
+      operationId: GetSearchesByRequestorAndGuild
+      parameters:
+      - description: Requestor ID
+        in: path
+        name: requestorId
+        required: true
+        type: string
+      - description: Guild ID
+        in: path
+        name: guildId
+        required: true
+        type: string
+      - description: Limit of results
+        in: query
+        name: limit
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Search'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Get all searches by requestor and guild
+      tags:
+      - Search
+  /stats/{requestorId}:
+    get:
+      operationId: GetRequestorStats
+      parameters:
+      - description: Requestor ID
+        in: path
+        name: requestorId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RequestorStats'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            type: object
+      summary: Get requestor stats
+      tags:
+      - Requestor
+swagger: "2.0"
