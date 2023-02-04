@@ -12,6 +12,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// GetRequestorStats
+// @Summary Get requestor stats
+// @ID GetRequestorStats
+// @Tags Requestor
+// @Param requestorId path string true "Requestor ID"
+// @Failure 400 {object} interface{}
+// @Failure 404 {object} interface{}
+// @Success 200 {object} models.RequestorStats
+// @Router /stats/{requestorId}	[get]
 func GetRequestorStats(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var searches []models.Search
@@ -45,6 +54,6 @@ func GetRequestorStats(c *fiber.Ctx) error {
 	requestorStats.TopSearch = topSearch
 	requestorStats.SearchCount = len(searches)
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "Requestor stats", Size: 1, Body: &fiber.Map{"data": requestorStats}})
+	return c.Status(http.StatusOK).JSON(requestorStats)
 
 }

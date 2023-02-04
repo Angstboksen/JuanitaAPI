@@ -6,15 +6,26 @@ import (
 	"juanitaapi/models"
 	"juanitaapi/responses"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var guildCollection *mongo.Collection = configs.GetCollection(configs.DB, "guilds")
 
+// CreateGuild
+// @Summary Create a new guild
+// @ID CreateGuild
+// @Tags Guild
+// @Param body body models.Guild true "Guild to create"
+// @Failure 500 {object} interface{}
+// @Failure 400 {object} interface{}
+// @Success 201 {object} models.Guild
+// @Router /guild	[post]
 func CreateGuild(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var guild models.Guild
@@ -38,14 +49,22 @@ func CreateGuild(c *fiber.Ctx) error {
 		Aliases:        guild.Aliases,
 	}
 
-	result, err := guildCollection.InsertOne(ctx, newGuild)
+	_, err := guildCollection.InsertOne(ctx, newGuild)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
 	}
 
-	return c.Status(http.StatusCreated).JSON(responses.MainResponse{Status: http.StatusCreated, Message: "success", Body: &fiber.Map{"data": result}})
+	return c.Status(http.StatusCreated).JSON(newGuild)
 }
 
+// UpdateGuild
+// @Summary Update a guild
+// @ID UpdateGuild
+// @Tags Guild
+// @Param body body models.Guild true "Guild to update"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} models.Guild
+// @Router /guild/{guildId}	[put]
 func UpdateGuild(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var guild models.Guild
@@ -71,9 +90,17 @@ func UpdateGuild(c *fiber.Ctx) error {
 
 	guildCollection.UpdateOne(ctx, bson.M{"id": guild.Id}, bson.M{"$set": newGuild})
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Body: &fiber.Map{"data": newGuild}})
+	return c.Status(http.StatusOK).JSON(newGuild)
 }
 
+// UpdateGuildLanguage
+// @Summary Update a guild language
+// @ID UpdateGuildLanguage
+// @Tags Guild
+// @Param body body models.GuildLanguagePatch true "Guild language to update"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} models.GuildLanguagePatch
+// @Router /guild/{guildId}/language	[patch]
 func UpdateGuildLanguage(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	guildId := c.Params("guildId")
@@ -100,15 +127,29 @@ func UpdateGuildLanguage(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": result.Err().Error()}})
 	}
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Size: 1, Body: &fiber.Map{"data": language}})
+	return c.Status(http.StatusOK).JSON(language)
 }
 
+// GetGuilds
+// @Summary Get all guilds
+// @ID GetGuilds
+// @Tags Guild
+// @Param limit query string false "Limit the amount of guilds returned"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} []models.Guild
+// @Router /guilds	[get]
 func GetGuilds(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	limit := c.Query("limit", "50")
 	var guilds []models.Guild
 	defer cancel()
 
-	results, err := guildCollection.Find(ctx, bson.M{})
+	limitInt, err := strconv.ParseInt(limit, 10, 64)
+	if err != nil {
+		limitInt = 50
+	}
+
+	results, err := guildCollection.Find(ctx, bson.M{}, &options.FindOptions{Limit: &limitInt})
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
 	}
@@ -119,5 +160,5 @@ func GetGuilds(c *fiber.Ctx) error {
 		guilds = append(guilds, guild)
 	}
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Size: len(guilds), Body: &fiber.Map{"data": guilds}})
+	return c.Status(http.StatusOK).JSON(guilds)
 }

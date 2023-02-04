@@ -13,6 +13,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// CreateAlias
+// @Summary Create a new alias for a playlist URI
+// @ID CreateAlias
+// @Tags Alias
+// @Param guildId path string true "Discord ID of the guild"
+// @Param body body models.AliasPost true "Alias to create"
+// @Failure 500 {object} interface{}
+// @Failure 400 {object} interface{}
+// @Success 201 {object}  models.Alias
+// @Router /alias/{guildId}	[post]
 func CreateAlias(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	guildId := c.Params("guildId")
@@ -62,9 +72,17 @@ func CreateAlias(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
 	}
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusCreated, Message: "success", Size: 1, Body: &fiber.Map{"data": newAlias}})
+	return c.Status(http.StatusOK).JSON(newAlias)
 }
 
+// GetAliases
+// @Summary Get all aliases for a guild
+// @ID GetAliases
+// @Tags Alias
+// @Param guildId path string true "Discord ID of the guild"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} []models.Alias
+// @Router /aliases/{guildId}	[get]
 func GetAliases(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	guildId := c.Params("guildId")
@@ -78,9 +96,18 @@ func GetAliases(c *fiber.Ctx) error {
 	var guild models.Guild
 	result.Decode(&guild)
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Body: &fiber.Map{"data": guild.Aliases}})
+	return c.Status(http.StatusOK).JSON(guild.Aliases)
 }
 
+// GetByAlias
+// @Summary Get an alias object by alias string if exists
+// @ID GetByAlias
+// @Tags Alias
+// @Param guildId path string true "Discord ID of the guild"
+// @Param alias path string true "Alias to get"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} models.Alias
+// @Router /alias/{guildId}/{alias}	[get]
 func GetByAlias(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	guildId := c.Params("guildId")
@@ -102,5 +129,5 @@ func GetByAlias(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Size: 1, Body: &fiber.Map{"data": alias}})
+	return c.Status(http.StatusOK).JSON(alias)
 }
