@@ -23,6 +23,8 @@ FROM golang:1.19-buster as builder
 # Create and change to the app directory.
 WORKDIR /app
 
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+
 # Retrieve application dependencies.
 # This allows the container build to reuse cached dependencies.
 # Expecting to copy go.mod and if present go.sum.
@@ -31,6 +33,8 @@ RUN go mod download
 
 # Copy local code to the container image.
 COPY . ./
+
+RUN swag init -g ./main.go -o ./api/docs
 
 # Build the binary.
 RUN go build -v -o server
@@ -45,6 +49,7 @@ RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -
 
 # Copy the binary to the production image from the builder stage.
 COPY --from=builder /app/server /app/server
+COPY --from=builder ./app/api/docs ./api/docs
 
 EXPOSE 6000
 

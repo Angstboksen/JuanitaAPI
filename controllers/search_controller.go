@@ -18,6 +18,14 @@ import (
 
 var searchCollection *mongo.Collection = configs.GetCollection(configs.DB, "searches")
 
+// CreateSearch
+// @Summary Create a new search
+// @ID CreateSearch
+// @Tags Search
+// @Param body body models.Search true "Search to create"
+// @Failure 400 {object} interface{}
+// @Success 201 {object} models.Search
+// @Router /search	[post]
 func CreateSearch(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var search models.Search
@@ -41,14 +49,22 @@ func CreateSearch(c *fiber.Ctx) error {
 		Duration:  search.Duration,
 	}
 
-	result, err := searchCollection.InsertOne(ctx, newSearch)
+	_, err := searchCollection.InsertOne(ctx, newSearch)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
 	}
 
-	return c.Status(http.StatusCreated).JSON(responses.MainResponse{Status: http.StatusCreated, Message: "success", Body: &fiber.Map{"data": result}})
+	return c.Status(http.StatusCreated).JSON(newSearch)
 }
 
+// GetSearches
+// @Summary Get all searches
+// @ID GetSearches
+// @Tags Search
+// @Param limit query string false "Limit of results"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} []models.Search
+// @Router /search	[get]
 func GetSearches(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	limit := c.Query("limit", "50")
@@ -75,11 +91,18 @@ func GetSearches(c *fiber.Ctx) error {
 		searches = append(searches, singleSearch)
 	}
 
-	return c.Status(http.StatusOK).JSON(
-		responses.MainResponse{Status: http.StatusOK, Message: "success", Size: len(searches), Body: &fiber.Map{"data": searches}},
-	)
+	return c.Status(http.StatusOK).JSON(searches)
 }
 
+// GetSearchesByRequestor
+// @Summary Get all searches by requestor
+// @ID GetSearchesByRequestor
+// @Tags Search
+// @Param requestorId path string true "Requestor ID"
+// @Param limit query string false "Limit of results"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} []models.Search
+// @Router /search/requestor/{requestorId}	[get]
 func GetSearchesByRequestor(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	limit := c.Query("limit", "50")
@@ -108,9 +131,18 @@ func GetSearchesByRequestor(c *fiber.Ctx) error {
 		searches = append(searches, singleSearch)
 	}
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Size: len(searches), Body: &fiber.Map{"data": searches}})
+	return c.Status(http.StatusOK).JSON(searches)
 }
 
+// GetSearchesByGuild
+// @Summary Get all searches by guild
+// @ID GetSearchesByGuild
+// @Tags Search
+// @Param guildId path string true "Guild ID"
+// @Param limit query string false "Limit of results"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} []models.Search
+// @Router /search/guild/{guildId}	[get]
 func GetSearchesByGuild(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	limit := c.Query("limit", "50")
@@ -139,9 +171,19 @@ func GetSearchesByGuild(c *fiber.Ctx) error {
 		searches = append(searches, singleSearch)
 	}
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Size: len(searches), Body: &fiber.Map{"data": searches}})
+	return c.Status(http.StatusOK).JSON(searches)
 }
 
+// GetSearchesByRequestorAndGuild
+// @Summary Get all searches by requestor and guild
+// @ID GetSearchesByRequestorAndGuild
+// @Tags Search
+// @Param requestorId path string true "Requestor ID"
+// @Param guildId path string true "Guild ID"
+// @Param limit query string false "Limit of results"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} []models.Search
+// @Router /search/requestor/{requestorId}/guild/{guildId}	[get]
 func GetSearchesByRequestorAndGuild(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	limit := c.Query("limit", "50")
@@ -171,14 +213,28 @@ func GetSearchesByRequestorAndGuild(c *fiber.Ctx) error {
 		searches = append(searches, singleSearch)
 	}
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Size: len(searches), Body: &fiber.Map{"data": searches}})
+	return c.Status(http.StatusOK).JSON(searches)
 }
 
+// GetMostPlayedSearches
+// @Summary Get most played searches
+// @ID GetMostPlayedSearches
+// @Tags Search
+// @Param limit query string false "Limit of results"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} []models.SongCount
+// @Router /search/mostplayed	[get]
 func GetMostPlayedSearches(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	limit := c.Query("limit", "50")
 	defer cancel()
 
-	results, err := searchCollection.Find(ctx, bson.M{})
+	limitInt, err := strconv.ParseInt(limit, 10, 64)
+	if err != nil {
+		limitInt = 50
+	}
+
+	results, err := searchCollection.Find(ctx, bson.M{}, &options.FindOptions{Limit: &limitInt})
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
 	}
@@ -196,15 +252,30 @@ func GetMostPlayedSearches(c *fiber.Ctx) error {
 
 	songCounts = utils.CountAndCompile(songCounts)
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Size: len(songCounts), Body: &fiber.Map{"data": songCounts}})
+	return c.Status(http.StatusOK).JSON(songCounts)
 }
 
+// GetMostPlayedSearchesByRequestor
+// @Summary Get most played searches by requestor
+// @ID GetMostPlayedSearchesByRequestor
+// @Tags Search
+// @Param requestorId path string true "Requestor ID"
+// @Param limit query string false "Limit of results"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} []models.SongCount
+// @Router /search/mostplayed/requestor/{requestorId}	[get]
 func GetMostPlayedSearchesByRequestor(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	limit := c.Query("limit", "50")
 	defer cancel()
+
+	limitInt, err := strconv.ParseInt(limit, 10, 64)
+	if err != nil {
+		limitInt = 50
+	}
 
 	requestor := c.Params("requestorId")
-	results, err := searchCollection.Find(ctx, bson.M{"requestor.id": requestor})
+	results, err := searchCollection.Find(ctx, bson.M{"requestor.id": requestor}, &options.FindOptions{Limit: &limitInt})
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
 	}
@@ -222,15 +293,30 @@ func GetMostPlayedSearchesByRequestor(c *fiber.Ctx) error {
 
 	songCounts = utils.CountAndCompile(songCounts)
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Size: len(songCounts), Body: &fiber.Map{"data": songCounts}})
+	return c.Status(http.StatusOK).JSON(songCounts)
 }
 
+// GetMostPlayedSearchesByGuild
+// @Summary Get most played searches by guild
+// @ID GetMostPlayedSearchesByGuild
+// @Tags Search
+// @Param guildId path string true "Guild ID"
+// @Param limit query string false "Limit of results"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} []models.SongCount
+// @Router /search/mostplayed/guild/{guildId}	[get]
 func GetMostPlayedSearchesByGuild(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	limit := c.Query("limit", "50")
 	defer cancel()
 
+	limitInt, err := strconv.ParseInt(limit, 10, 64)
+	if err != nil {
+		limitInt = 50
+	}
+
 	guild := c.Params("guildId")
-	results, err := searchCollection.Find(ctx, bson.M{"guild": guild})
+	results, err := searchCollection.Find(ctx, bson.M{"guild": guild}, &options.FindOptions{Limit: &limitInt})
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
 	}
@@ -248,5 +334,5 @@ func GetMostPlayedSearchesByGuild(c *fiber.Ctx) error {
 
 	songCounts = utils.CountAndCompile(songCounts)
 
-	return c.Status(http.StatusOK).JSON(responses.MainResponse{Status: http.StatusOK, Message: "success", Size: len(songCounts), Body: &fiber.Map{"data": songCounts}})
+	return c.Status(http.StatusOK).JSON(songCounts)
 }

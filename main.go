@@ -7,6 +7,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// @title JuanitaAPI
+// @version 1.0
+// @description Backend service for JuanitaMusic discord bot
+// @license.name MIT
 func main() {
 	app := fiber.New()
 	configs.ConnectDB()
@@ -16,6 +20,6 @@ func main() {
 	routes.GuildRoute(app)
 	routes.RequestorRoute(app)
 	routes.GetStats(app)
-
+	app.Static("/docs", "./api/docs")
 	app.Listen(":6000")
 }
