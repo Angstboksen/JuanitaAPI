@@ -62,6 +62,7 @@ func CreateGuild(c *fiber.Ctx) error {
 // @ID UpdateGuild
 // @Tags Guild
 // @Param body body models.Guild true "Guild to update"
+// @Param guildId path string true "Guild id"
 // @Failure 400 {object} interface{}
 // @Success 200 {object} models.Guild
 // @Router /guild/{guildId}	[put]
@@ -98,6 +99,7 @@ func UpdateGuild(c *fiber.Ctx) error {
 // @ID UpdateGuildLanguage
 // @Tags Guild
 // @Param body body models.GuildLanguagePatch true "Guild language to update"
+// @Param guildId path string true "Guild id"
 // @Failure 400 {object} interface{}
 // @Success 200 {object} models.GuildLanguagePatch
 // @Router /guild/{guildId}/language	[patch]
