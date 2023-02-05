@@ -164,3 +164,27 @@ func GetGuilds(c *fiber.Ctx) error {
 
 	return c.Status(http.StatusOK).JSON(guilds)
 }
+
+// GetGuild
+// @Summary Get a guild
+// @ID GetGuild
+// @Tags Guild
+// @Param guildId path string true "Guild id"
+// @Failure 400 {object} interface{}
+// @Success 200 {object} models.Guild
+// @Router /guild/{guildId}	[get]
+func GetGuild(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	guildId := c.Params("guildId")
+	var guild models.Guild
+	defer cancel()
+
+	result := guildCollection.FindOne(ctx, bson.M{"id": guildId})
+	if result.Err() != nil {
+		return c.Status(http.StatusNotFound).JSON(responses.MainResponse{Status: http.StatusNotFound, Message: "error", Body: &fiber.Map{"data": "No guild with that id found"}})
+	}
+
+	result.Decode(&guild)
+
+	return c.Status(http.StatusOK).JSON(guild)
+}
