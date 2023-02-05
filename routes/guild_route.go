@@ -12,4 +12,5 @@ func GuildRoute(app *fiber.App) {
 	app.Put("/guild/:guildId", controllers.UpdateGuild)
 	app.Put("/guild/:guildId/language", controllers.UpdateGuildLanguage)
 	app.Get("/guilds", controllers.GetGuilds)
+	app.Get("/guild/:guildId", controllers.GetGuild)
 }
