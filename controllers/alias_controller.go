@@ -72,7 +72,7 @@ func CreateAlias(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
 	}
 
-	return c.Status(http.StatusOK).JSON(newAlias)
+	return c.Status(http.StatusCreated).JSON(newAlias)
 }
 
 // GetAliases
