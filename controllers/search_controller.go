@@ -23,6 +23,7 @@ var searchCollection *mongo.Collection = configs.GetCollection(configs.DB, "sear
 // @ID CreateSearch
 // @Tags Search
 // @Param body body models.Search true "Search to create"
+// @Failure 500 {object} interface{}
 // @Failure 400 {object} interface{}
 // @Success 201 {object} models.Search
 // @Router /search	[post]
@@ -41,15 +42,35 @@ func CreateSearch(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "error", Body: &fiber.Map{"data": validationErr.Error()}})
 	}
 
+	// check if the requestor exists in the database
+	var requestor models.Requestor
+	err := searchCollection.FindOne(ctx, bson.M{"requestor.id": search.Requestor.Id}).Decode(&requestor)
+	if err != nil {
+		newRequestor := models.Requestor{
+			Id:  search.Requestor.Id,
+			Tag: search.Requestor.Tag,
+		}
+		_, err := requestorCollection.InsertOne(ctx, newRequestor)
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
+		}
+	}
+
+	_, err = requestorCollection.UpdateOne(ctx, bson.M{"requestor.id": search.Requestor.Id}, bson.M{"$set": bson.M{"requestor.tag": search.Requestor.Tag}})
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
+	}
+
 	newSearch := models.Search{
 		Title:     search.Title,
 		Date:      search.Date,
 		Requestor: search.Requestor,
 		Guild:     search.Guild,
 		Duration:  search.Duration,
+		Url:       search.Url,
 	}
 
-	_, err := searchCollection.InsertOne(ctx, newSearch)
+	_, err = searchCollection.InsertOne(ctx, newSearch)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.MainResponse{Status: http.StatusInternalServerError, Message: "error", Body: &fiber.Map{"data": err.Error()}})
 	}
