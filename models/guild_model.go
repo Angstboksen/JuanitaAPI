@@ -3,10 +3,9 @@ package models
 type Language string
 
 const (
-	Unknown   Language = "unknown"
-	English            = "en"
-	Norwegian          = "no"
-	Molde              = "molde"
+	English   Language = "en"
+	Norwegian Language = "no"
+	Molde     Language = "molde"
 )
 
 type Guild struct {
