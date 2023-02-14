@@ -48,7 +48,7 @@ func CreateAlias(c *fiber.Ctx) error {
 	}
 	playlistId := strings.Split(alias.PlaylistId, ":")[2]
 	existsPlaylist := guildCollection.FindOne(ctx, bson.M{"id": guildId, "alias.playlistid": playlistId})
-	if existsPlaylist.Err() != nil {
+	if existsPlaylist.Err() == nil {
 		var playlistAlias models.Alias
 		existsPlaylist.Decode(&playlistAlias)
 		return c.Status(http.StatusBadRequest).JSON(responses.MainResponse{Status: http.StatusBadRequest, Message: "PlaylistID already has an alias in guild", Body: &fiber.Map{"data": playlistAlias.Alias}})
